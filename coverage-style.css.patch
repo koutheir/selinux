@@ -1,0 +1,93 @@
+--- a/style.css	2020-12-01 18:44:28.612937212 -0500
++++ b/style.css	2020-12-01 14:25:39.616532796 -0500
+@@ -1,22 +1,24 @@
+ .red {
+-  background-color: #ffd0d0;
++  background-color: #880000;
+ }
+ .cyan {
+   background-color: cyan;
+ }
+ body {
+   font-family: -apple-system, sans-serif;
++  color: #ffffff;
++  background-color: #222222;
+ }
+ pre {
+   margin-top: 0px !important;
+   margin-bottom: 0px !important;
+ }
+ .source-name-title {
+   padding: 5px 10px;
+   border-bottom: 1px solid #dbdbdb;
+-  background-color: #eee;
++  background-color: #00007f;
+   line-height: 35px;
+ }
+ .centered {
+   display: table;
+   margin-left: left;
+@@ -52,25 +54,25 @@
+   font-weight: bold;
+   text-align: left;
+ }
+ .column-entry-yellow {
+   text-align: left;
+-  background-color: #ffffd0;
++  background-color: #808000;
+ }
+ .column-entry-yellow:hover {
+   background-color: #fffff0;
+ }
+ .column-entry-red {
+   text-align: left;
+-  background-color: #ffd0d0;
++  background-color: #aa0000;
+ }
+ .column-entry-red:hover {
+   background-color: #fff0f0;
+ }
+ .column-entry-green {
+   text-align: left;
+-  background-color: #d0ffd0;
++  background-color: #005500;
+ }
+ .column-entry-green:hover {
+   background-color: #f0fff0;
+ }
+ .line-number {
+@@ -86,11 +88,11 @@
+   color: #ff3300;
+ }
+ .tooltip {
+   position: relative;
+   display: inline;
+-  background-color: #b3e6ff;
++  background-color: #006699;
+   text-decoration: none;
+ }
+ .tooltip span.tooltip-content {
+   position: absolute;
+   width: 100px;
+@@ -126,10 +128,11 @@
+   padding: 2px 8px;
+   border-collapse: collapse;
+   border-right: solid 1px #eee;
+   border-left: solid 1px #eee;
+   text-align: left;
++  background-color: #222222;
+ }
+ td pre {
+   display: inline-block;
+ }
+ td:first-child {
+@@ -139,5 +142,9 @@
+   border-right: none;
+ }
+ tr:hover {
+   background-color: #f0f0f0;
+ }
++a {
++  color: yellow;
++  text-decoration: none;
++}

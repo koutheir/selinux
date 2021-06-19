@@ -1,0 +1,30 @@
+[package]
+name = "selinux"
+description = "Flexible Mandatory Access Control for Linux"
+version = "0.1.0" # Remember to update `html_root_url`.
+authors = ["Koutheir Attouchi <koutheir@gmail.com>"]
+edition = "2018"
+readme = "README.md"
+license = "MIT"
+keywords = [ "selinux", "security", "access-control", "linux", "filesystem" ]
+categories = [ "api-bindings", "filesystem", "os", "os::linux-apis" ]
+repository = "https://github.com/koutheir/selinux"
+documentation = "https://docs.rs/selinux"
+
+[dependencies]
+thiserror                   = { version = "1.0" }
+selinux-sys                 = { version = "0.4" }
+libc                        = { version = "0.2" }
+arrayvec                    = { version = "0.7" }
+bitflags                    = { version = "1.2" }
+once_cell                   = { version = "1.8" }
+reference-counted-singleton = { version = "0.1" }
+
+[dev-dependencies]
+assert_matches = { version = "1.4" }
+tempfile       = { version = "3.2" }
+serial_test    = { version = "0.5" }
+socketpair     = { version = "0.7" }
+
+[package.metadata.docs.rs]
+default-target = "x86_64-unknown-linux-musl"
