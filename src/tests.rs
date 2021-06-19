@@ -407,11 +407,11 @@ fn security_context_validate_transition() {
         .unwrap_err();
 
     if let Err(r) = context.validate_transition(&context, target_class, &context) {
-        assert_eq!(r.io_source().unwrap().kind(), io::ErrorKind::Unsupported);
+        assert_eq!(r.io_source().unwrap().raw_os_error(), Some(libc::ENOSYS));
     }
 
     if let Err(r) = raw_context.validate_transition(&raw_context, target_class, &raw_context) {
-        assert_eq!(r.io_source().unwrap().kind(), io::ErrorKind::Unsupported);
+        assert_eq!(r.io_source().unwrap().raw_os_error(), Some(libc::ENOSYS));
     }
 }
 

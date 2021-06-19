@@ -79,7 +79,7 @@ fn labeler_get_digests_all_partial_matches_by_path() {
     let labeler = super::Labeler::<super::back_end::File>::new(&[], false).unwrap();
 
     if let Err(r) = labeler.get_digests_all_partial_matches_by_path("/lib") {
-        assert_eq!(r.io_source().unwrap().kind(), io::ErrorKind::Unsupported);
+        assert_eq!(r.io_source().unwrap().raw_os_error(), Some(libc::ENOSYS));
     }
 }
 

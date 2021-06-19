@@ -1767,7 +1767,7 @@ pub fn undefined_handling() -> Result<UndefinedHandling> {
     let mut reject_unknown = unsafe { (OptionalNativeFunctions::get().security_reject_unknown)() };
     if reject_unknown == -1 {
         let err = io::Error::last_os_error();
-        if err.kind() == io::ErrorKind::Unsupported {
+        if err.raw_os_error() == Some(libc::ENOSYS) {
             reject_unknown = 0;
         } else {
             return Err(Error::from_io("security_reject_unknown()", err));
