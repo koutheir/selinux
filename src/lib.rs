@@ -43,7 +43,7 @@ The `CHANGELOG.md` file details notable changes over time.
 */
 
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.1.1")]
 #![allow(clippy::upper_case_acronyms)]
 //
 // https://rust-lang.github.io/api-guidelines/checklist.html
