@@ -19,9 +19,7 @@ Please refer to the [official SELinux documentation], the manual pages of
 the [`libselinux`] native library, and the [`selinux-sys`] crate for a more
 complete picture on how to use this crate.
 
-## Cargo features
-
-### ⚓ Backward compatibility
+## ⚓ Backward compatibility
 
 This crate requires `libselinux` version `2.8`, at least.
 However, this crate provides some functions that are based on `libselinux`
