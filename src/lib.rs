@@ -1150,7 +1150,7 @@ impl<'t> SecurityContext<'t> {
     }
 
     fn parse_context_color(bytes: &[u8]) -> Result<SecurityContextColors> {
-        let colors: arrayvec::ArrayVec<RGB, 8> = bytes
+        let colors: Vec<RGB> = bytes
             .split(u8::is_ascii_whitespace)
             .filter(|&bytes| !bytes.is_empty())
             .take(8)
