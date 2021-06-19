@@ -1,2 +1,7 @@
 /target
 Cargo.lock
+.vscode/
+*.code-workspace
+libselinux-*.tar.gz
+*.pdf
+.directory
