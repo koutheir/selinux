@@ -25,6 +25,3 @@ assert_matches = { version = "1.4" }
 tempfile       = { version = "3.2" }
 serial_test    = { version = "0.5" }
 socketpair     = { version = "0.7" }
-
-[package.metadata.docs.rs]
-default-target = "x86_64-unknown-linux-musl"
