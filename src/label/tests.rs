@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use std::ffi::CStr;
 use std::os::raw::c_void;
 use std::path::Path;
-use std::{io, ptr};
+use std::ptr;
 
 #[test]
 fn labeler_new_file() {
