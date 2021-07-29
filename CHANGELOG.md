@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2021-07-28
+
+### Added
+
+- Implemented `Send` for `CAllocatedBlock`.
+
+### Changed
+
+- Updated dependencies: `selinux-sys`, `assert_matches`, `socketpair`.
+- Updated nightly compiler version for coverage analysis.
+
 ## [0.1.1] - 2021-06-19
 
 ### Changed
