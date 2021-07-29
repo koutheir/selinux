@@ -1,3 +1,7 @@
+#![cfg(all(target_os = "linux", not(target_env = "kernel")))]
+#![doc(html_root_url = "https://docs.rs/selinux/0.1.1")]
+#![allow(clippy::upper_case_acronyms)]
+
 /*!
 # 🛡️ Safe Rust bindings for `libselinux`
 
@@ -40,11 +44,9 @@ The `CHANGELOG.md` file details notable changes over time.
 [`selinux-sys`]: https://docs.rs/selinux-sys/
 */
 
-#![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.1.1")]
-#![allow(clippy::upper_case_acronyms)]
 //
 // https://rust-lang.github.io/api-guidelines/checklist.html
+//
 
 // Activate these lints to clean up the code and hopefully detect some issues.
 #![warn(missing_docs)]

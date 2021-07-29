@@ -307,7 +307,7 @@ impl Labeler<back_end::File> {
 
 /// Digest of spec files and list of files used.
 ///
-/// ⚠️ This instance does **NOT** own the digest or the spec_files.
+/// ⚠️ This instance does **NOT** own the `digest` or the `spec_files`.
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Digest<'l> {
     digest: &'l [u8],

@@ -81,6 +81,8 @@ pub(crate) fn ret_val_to_result_with_path(
 }
 
 /// An owned block of memory, allocated with [`libc::malloc`].
+///
+/// Dropping this instance calls [`libc::free`] on the managed pointer.
 #[derive(Debug)]
 pub struct CAllocatedBlock<T> {
     pub(crate) pointer: ptr::NonNull<T>,
