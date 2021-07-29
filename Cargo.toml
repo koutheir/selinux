@@ -13,14 +13,14 @@ documentation = "https://docs.rs/selinux"
 
 [dependencies]
 thiserror                   = { version = "1.0" }
-selinux-sys                 = { version = "0.4" }
+selinux-sys                 = { version = "0.5" }
 libc                        = { version = "0.2" }
 bitflags                    = { version = "1.2" }
 once_cell                   = { version = "1.8" }
 reference-counted-singleton = { version = "0.1" }
 
 [dev-dependencies]
-assert_matches = { version = "1.4" }
+assert_matches = { version = "1.5" }
 tempfile       = { version = "3.2" }
 serial_test    = { version = "0.5" }
-socketpair     = { version = "0.7" }
+socketpair     = { version = "0.8" }
