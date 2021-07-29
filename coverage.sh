@@ -15,8 +15,8 @@ COV_CARGO_ENV='RUSTFLAGS=-Zinstrument-coverage RUSTDOCFLAGS=-Zinstrument-coverag
 COV_CARGO_ENV="$COV_CARGO_ENV CARGO_INCREMENTAL=0"
 
 # https://rust-lang.github.io/rustup-components-history/
-# rustup +nightly-2021-05-31 component add llvm-tools-preview
-NIGHTLY_TOOLCHAIN=nightly-2021-05-31
+# rustup +nightly-2021-07-06 component add llvm-tools-preview
+NIGHTLY_TOOLCHAIN=nightly-2021-07-06
 
 IGNORED_FILE_NAMES='/\.cargo/registry/ /rustc/ /tests.rs$$ ^'"$TARGET_DIR/"
 
