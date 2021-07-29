@@ -89,6 +89,13 @@ pub struct CAllocatedBlock<T> {
     _phantom_data: PhantomData<T>,
 }
 
+/// # Safety
+///
+/// - [`libc::malloc()`]-allocated memory blocks are accessible from any thread.
+/// - [`libc::free()`] supports deallocating memory blocks allocated in
+///   a different thread.
+unsafe impl<T> Send for CAllocatedBlock<T> {}
+
 impl<T> CAllocatedBlock<T> {
     pub(crate) fn new(pointer: *mut T) -> Option<Self> {
         ptr::NonNull::new(pointer).map(|pointer| Self {
