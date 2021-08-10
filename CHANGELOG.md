@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2021-08-10
+
+### Added
+
+- Added `SecurityContext::to_c_string()` method.
+
 ## [0.2.0] - 2021-08-09
 
 ### Added

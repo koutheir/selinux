@@ -1,5 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.2.0")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.2.1")]
 #![allow(clippy::upper_case_acronyms)]
 
 /*!
@@ -221,6 +221,33 @@ impl<'t> SecurityContext<'t> {
             || unsafe { CStr::from_ptr(self.context.as_ptr()).to_bytes() },
             |size| unsafe { slice::from_raw_parts(self.context.as_ptr().cast(), size) },
         )
+    }
+
+    /// Return the string value of this security context.
+    ///
+    /// If the context is empty, then this returns `Ok(None)`.
+    pub fn to_c_string(&self) -> Result<Option<Cow<CStr>>> {
+        if let Some(size) = self.size {
+            let bytes = unsafe { slice::from_raw_parts(self.context.as_ptr().cast(), size) };
+            if bytes.is_empty() {
+                Ok(None)
+            } else if bytes.last().cloned() == Some(0) {
+                if let Ok(result) = CStr::from_bytes_with_nul(bytes) {
+                    Ok(Some(Cow::Borrowed(result)))
+                } else {
+                    let op = "CStr::from_bytes_with_nul()";
+                    Err(Error::from_io(op, io::ErrorKind::InvalidData.into()))
+                }
+            } else if let Ok(result) = CString::new(bytes) {
+                Ok(Some(Cow::Owned(result)))
+            } else {
+                let op = "CString::new()";
+                Err(Error::from_io(op, io::ErrorKind::InvalidData.into()))
+            }
+        } else {
+            let result = unsafe { CStr::from_ptr(self.context.as_ptr()) };
+            Ok(Some(Cow::Borrowed(result)))
+        }
     }
 
     /// Return the security context identified by `context`.
