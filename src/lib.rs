@@ -1,5 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.1.3")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.2.0")]
 #![allow(clippy::upper_case_acronyms)]
 
 /*!
@@ -1546,7 +1546,19 @@ impl OpaqueSecurityContext {
     /// Set the type of this security context.
     ///
     /// See: `context_type_set()`.
-    pub fn set_type(&self, new_value: &str) -> Result<()> {
+    pub fn set_type_str(&self, new_value: &str) -> Result<()> {
+        let c_new_value = str_to_c_string(new_value)?;
+        self.set(
+            selinux_sys::context_type_set,
+            "context_type_set()",
+            c_new_value.as_ref(),
+        )
+    }
+
+    /// Set the type of this security context.
+    ///
+    /// See: `context_type_set()`.
+    pub fn set_type(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_type_set()";
         self.set(selinux_sys::context_type_set, proc_name, new_value)
     }
@@ -1561,7 +1573,19 @@ impl OpaqueSecurityContext {
     /// Set the range of this security context.
     ///
     /// See: `context_range_set()`.
-    pub fn set_range(&self, new_value: &str) -> Result<()> {
+    pub fn set_range_str(&self, new_value: &str) -> Result<()> {
+        let c_new_value = str_to_c_string(new_value)?;
+        self.set(
+            selinux_sys::context_range_set,
+            "context_range_set()",
+            c_new_value.as_ref(),
+        )
+    }
+
+    /// Set the range of this security context.
+    ///
+    /// See: `context_range_set()`.
+    pub fn set_range(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_range_set()";
         self.set(selinux_sys::context_range_set, proc_name, new_value)
     }
@@ -1576,7 +1600,19 @@ impl OpaqueSecurityContext {
     /// Set the role of this security context.
     ///
     /// See: `context_role_set()`.
-    pub fn set_role(&self, new_value: &str) -> Result<()> {
+    pub fn set_role_str(&self, new_value: &str) -> Result<()> {
+        let c_new_value = str_to_c_string(new_value)?;
+        self.set(
+            selinux_sys::context_role_set,
+            "context_role_set()",
+            c_new_value.as_ref(),
+        )
+    }
+
+    /// Set the role of this security context.
+    ///
+    /// See: `context_role_set()`.
+    pub fn set_role(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_role_set()";
         self.set(selinux_sys::context_role_set, proc_name, new_value)
     }
@@ -1591,7 +1627,19 @@ impl OpaqueSecurityContext {
     /// Set the user of this security context.
     ///
     /// See: `context_user_set()`.
-    pub fn set_user(&self, new_value: &str) -> Result<()> {
+    pub fn set_user_str(&self, new_value: &str) -> Result<()> {
+        let c_new_value = str_to_c_string(new_value)?;
+        self.set(
+            selinux_sys::context_user_set,
+            "context_user_set()",
+            c_new_value.as_ref(),
+        )
+    }
+
+    /// Set the user of this security context.
+    ///
+    /// See: `context_user_set()`.
+    pub fn set_user(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_user_set()";
         self.set(selinux_sys::context_user_set, proc_name, new_value)
     }
@@ -1613,10 +1661,9 @@ impl OpaqueSecurityContext {
         &self,
         proc: unsafe extern "C" fn(selinux_sys::context_t, *const c_char) -> c_int,
         proc_name: &'static str,
-        new_value: &str,
+        new_value: &CStr,
     ) -> Result<()> {
-        let c_new_value = str_to_c_string(new_value)?;
-        if unsafe { proc(self.context.as_ptr(), c_new_value.as_ptr()) } == 0 {
+        if unsafe { proc(self.context.as_ptr(), new_value.as_ptr()) } == 0 {
             Ok(())
         } else {
             Err(Error::last_io_error(proc_name))

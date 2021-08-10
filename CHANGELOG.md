@@ -2,6 +2,23 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2021-08-09
+
+### Added
+
+- Added new versions of `set_type()`, `set_range()`, `set_role()` and `set_user()`
+  in `OpaqueSecurityContext` where the new value is a `CStr`.
+
+### Changed
+
+- Renamed multiple methods in `OpaqueSecurityContext`:
+  - `set_type()` to `set_type_str()`.
+  - `set_range()` to `set_range_str()`.
+  - `set_role()` to `set_role_str()`.
+  - `set_user()` to `set_user_str()`.
+
+  **This is a breaking change.**
+
 ## [0.1.3] - 2021-08-02
 
 ### Changed

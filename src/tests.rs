@@ -638,7 +638,7 @@ fn opaque_security_context() {
             assert!(expected_range.is_none());
         }
 
-        osc.set_user("user2").unwrap();
+        osc.set_user_str("user2").unwrap();
 
         assert_eq!(osc.user().unwrap().to_str().ok(), Some("user2"));
         assert_eq!(osc.role().unwrap().to_str().ok(), Some("role1"));
@@ -649,7 +649,7 @@ fn opaque_security_context() {
             assert!(expected_range.is_none());
         }
 
-        osc.set_role("role2").unwrap();
+        osc.set_role_str("role2").unwrap();
 
         assert_eq!(osc.user().unwrap().to_str().ok(), Some("user2"));
         assert_eq!(osc.role().unwrap().to_str().ok(), Some("role2"));
@@ -660,7 +660,7 @@ fn opaque_security_context() {
             assert!(expected_range.is_none());
         }
 
-        osc.set_type("type2").unwrap();
+        osc.set_type_str("type2").unwrap();
 
         assert_eq!(osc.user().unwrap().to_str().ok(), Some("user2"));
         assert_eq!(osc.role().unwrap().to_str().ok(), Some("role2"));
@@ -671,7 +671,7 @@ fn opaque_security_context() {
             assert!(expected_range.is_none());
         }
 
-        osc.set_range("range2").unwrap();
+        osc.set_range_str("range2").unwrap();
 
         assert_eq!(osc.user().unwrap().to_str().ok(), Some("user2"));
         assert_eq!(osc.role().unwrap().to_str().ok(), Some("role2"));
