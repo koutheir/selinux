@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2021-08-18
+
+### Added
+
+- Added documentation aliases to `libselinux` functions.
+  This should make it easier to search in crate functionality by `libselinux` API name.
+
+### Changed
+
+- Updated dependencies: `bitflags`, `socketpair`.
+
 ## [0.2.1] - 2021-08-10
 
 ### Added

@@ -42,6 +42,7 @@ impl AccessVectorCache {
     /// set of options as the previous, still in scope, one.
     ///
     /// See: `avc_open()`.
+    #[doc(alias("avc_open"))]
     pub fn initialize(options: &[(c_int, *const c_void)]) -> Result<RCSRef<Self>> {
         let mut options: Vec<selinux_sys::selinux_opt> = options
             .iter()
@@ -100,6 +101,7 @@ impl AccessVectorCache {
     /// cached access decisions.
     ///
     /// See: `avc_reset()`.
+    #[doc(alias("avc_reset"))]
     pub fn reset(&self) -> Result<()> {
         ret_val_to_result("avc_reset()", unsafe { selinux_sys::avc_reset() })
     }
@@ -108,6 +110,7 @@ impl AccessVectorCache {
     /// cache, but do not flush any cached access decisions.
     ///
     /// See: `avc_cleanup()`.
+    #[doc(alias("avc_cleanup"))]
     pub fn clean_up(&self) {
         unsafe { selinux_sys::avc_cleanup() }
     }
@@ -116,6 +119,7 @@ impl AccessVectorCache {
     /// specified by `security_identifier_name`.
     ///
     /// See: `avc_get_initial_sid()`.
+    #[doc(alias("avc_get_initial_sid"))]
     pub fn kernel_initial_security_id<'t>(
         &'t self,
         security_id_name: &str,
@@ -137,6 +141,7 @@ impl AccessVectorCache {
     /// Return a security context for the given security identifier.
     ///
     /// See: `avc_sid_to_context()`.
+    #[doc(alias("avc_sid_to_context"))]
     pub fn security_context_from_security_id<'t>(
         &'t self,
         mut security_id: SecurityID,
@@ -158,6 +163,7 @@ impl AccessVectorCache {
     /// Return a security identifier for the given security context.
     ///
     /// See: `avc_context_to_sid()`.
+    #[doc(alias("avc_context_to_sid"))]
     pub fn security_id_from_security_context<'t>(
         &'t self,
         context: SecurityContext,

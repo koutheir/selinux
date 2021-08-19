@@ -11,6 +11,7 @@ use crate::utils::*;
 /// Load a new SELinux policy.
 ///
 /// See: `security_load_policy()`.
+#[doc(alias("security_load_policy"))]
 pub fn load(policy_bytes: &mut [u8]) -> Result<()> {
     let data = policy_bytes.as_mut_ptr().cast();
     let r = unsafe { selinux_sys::security_load_policy(data, policy_bytes.len()) };
@@ -20,6 +21,7 @@ pub fn load(policy_bytes: &mut [u8]) -> Result<()> {
 /// Make a policy image and load it.
 ///
 /// See: `selinux_mkload_policy()`.
+#[doc(alias("selinux_mkload_policy"))]
 pub fn make_and_load() -> Result<()> {
     let r = unsafe { selinux_sys::selinux_mkload_policy(0) };
     ret_val_to_result("selinux_mkload_policy()", r)
@@ -28,6 +30,7 @@ pub fn make_and_load() -> Result<()> {
 /// Perform the initial policy load.
 ///
 /// See: `selinux_init_load_policy()`.
+#[doc(alias("selinux_init_load_policy"))]
 pub fn load_initial() -> Result<c_int> {
     let mut enforce: c_int = 0;
     if unsafe { selinux_sys::selinux_init_load_policy(&mut enforce) } == -1 {
@@ -40,6 +43,7 @@ pub fn load_initial() -> Result<c_int> {
 /// Get the type of SELinux policy running on the system.
 ///
 /// See: `selinux_getpolicytype()`.
+#[doc(alias("selinux_getpolicytype"))]
 pub fn policy_type() -> Result<CAllocatedBlock<c_char>> {
     let mut name_ptr: *mut c_char = ptr::null_mut();
     if unsafe { selinux_sys::selinux_getpolicytype(&mut name_ptr) } == -1 {
@@ -54,6 +58,7 @@ pub fn policy_type() -> Result<CAllocatedBlock<c_char>> {
 /// Get the version of the SELinux policy.
 ///
 /// See: `security_policyvers()`.
+#[doc(alias("security_policyvers"))]
 pub fn version_number() -> Result<c_uint> {
     let r = unsafe { selinux_sys::security_policyvers() };
     if r == -1 {
@@ -66,6 +71,7 @@ pub fn version_number() -> Result<c_uint> {
 /// Return the path of the SELinux policy files for this machine.
 ///
 /// See: `selinux_policy_root()`.
+#[doc(alias("selinux_policy_root"))]
 pub fn root_path() -> Result<&'static Path> {
     get_static_path(selinux_sys::selinux_policy_root, "selinux_policy_root()")
 }
@@ -73,6 +79,7 @@ pub fn root_path() -> Result<&'static Path> {
 /// Set an alternate SELinux root path for the SELinux policy files for this machine.
 ///
 /// See: `selinux_set_policy_root()`.
+#[doc(alias("selinux_set_policy_root"))]
 pub fn set_root_path(path: impl AsRef<Path>) -> Result<()> {
     let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
     let r = unsafe { selinux_sys::selinux_set_policy_root(c_path.as_ptr()) };
@@ -82,6 +89,7 @@ pub fn set_root_path(path: impl AsRef<Path>) -> Result<()> {
 /// Return the currently loaded policy file from the kernel.
 ///
 /// See: `selinux_current_policy_path()`.
+#[doc(alias("selinux_current_policy_path"))]
 pub fn current_policy_path() -> Result<&'static Path> {
     let proc_name = "selinux_current_policy_path()";
     get_static_path(selinux_sys::selinux_current_policy_path, proc_name)
@@ -90,6 +98,7 @@ pub fn current_policy_path() -> Result<&'static Path> {
 /// Return the binary policy file loaded into kernel.
 ///
 /// See: `selinux_binary_policy_path()`.
+#[doc(alias("selinux_binary_policy_path"))]
 pub fn binary_policy_path() -> Result<&'static Path> {
     let proc_name = "selinux_binary_policy_path()";
     get_static_path(selinux_sys::selinux_binary_policy_path, proc_name)

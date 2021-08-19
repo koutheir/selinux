@@ -148,6 +148,7 @@ where
     /// Set a labeling handle for relabeling.
     ///
     /// See: `selinux_restorecon_set_sehandle()`.
+    #[doc(alias("selinux_restorecon_set_sehandle"))]
     pub fn with_labeler(labeler: &'l mut Labeler<T>) -> Self {
         Self {
             labeler: Some(labeler),
@@ -163,6 +164,7 @@ where
     /// Set an alternate root path for relabeling.
     ///
     /// See: `selinux_restorecon_set_alt_rootpath()`.
+    #[doc(alias("selinux_restorecon_set_alt_rootpath"))]
     pub fn set_alternative_root_path(&mut self, path: impl AsRef<Path>) -> Result<()> {
         let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
         let r = unsafe { selinux_sys::selinux_restorecon_set_alt_rootpath(c_path.as_ptr()) };
@@ -172,6 +174,7 @@ where
     /// Add to the list of directories to be excluded from relabeling.
     ///
     /// See: `selinux_restorecon_set_exclude_list()`.
+    #[doc(alias("selinux_restorecon_set_exclude_list"))]
     pub fn add_exclude_list<P>(
         &mut self,
         exclusion_patterns: impl IntoIterator<Item = P>,
@@ -200,6 +203,7 @@ where
     /// Restore file(s) default SELinux security contexts.
     ///
     /// See: `selinux_restorecon()`.
+    #[doc(alias("selinux_restorecon"))]
     pub fn restore_context_of_file_system_entry(
         self,
         path: impl AsRef<Path>,
@@ -218,6 +222,7 @@ where
     /// `selinux_restorecon()`, `setfiles()` or `restorecon()`.
     ///
     /// See: `selinux_restorecon_xattr()`.
+    #[doc(alias("selinux_restorecon_xattr"))]
     pub fn manage_security_sehash_xattr_entries(
         dir_path: impl AsRef<Path>,
         flags: XAttrFlags,
