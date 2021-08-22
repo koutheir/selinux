@@ -2,6 +2,14 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2021-08-22
+
+### Changed
+
+- Replace each single `doc(alias)` directive specifying multiple aliases by
+  multiple `doc(alias)` directives each specifying a single alias.
+  This reduces the minimum supported Rust version for this crate.
+
 ## [0.2.2] - 2021-08-18
 
 ### Added

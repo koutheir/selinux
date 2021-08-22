@@ -1,5 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.2.2")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.2.3")]
 #![allow(clippy::upper_case_acronyms)]
 
 /*!
@@ -409,12 +409,10 @@ impl<'t> SecurityContext<'t> {
     ///
     /// See: `get_default_context()`, `get_default_context_with_level()`,
     /// `get_default_context_with_role()`, `get_default_context_with_rolelevel()`.
-    #[doc(alias(
-        "get_default_context",
-        "get_default_context_with_level",
-        "get_default_context_with_role",
-        "get_default_context_with_rolelevel"
-    ))]
+    #[doc(alias("get_default_context"))]
+    #[doc(alias("get_default_context_with_level"))]
+    #[doc(alias("get_default_context_with_role"))]
+    #[doc(alias("get_default_context_with_rolelevel"))]
     pub fn default_for_se_user(
         se_user: &str,
         role: Option<&str>,
@@ -643,7 +641,8 @@ impl<'t> SecurityContext<'t> {
     /// Get the context associated with the given path in the file system.
     ///
     /// See: `lgetfilecon()`, `getfilecon()`.
-    #[doc(alias("lgetfilecon", "getfilecon"))]
+    #[doc(alias("lgetfilecon"))]
+    #[doc(alias("getfilecon"))]
     pub fn of_path(
         path: impl AsRef<Path>,
         follow_symbolic_links: bool,
@@ -688,7 +687,8 @@ impl<'t> SecurityContext<'t> {
     /// Set the SELinux security context of a file system object.
     ///
     /// See: `lsetfilecon()`, `setfilecon()`.
-    #[doc(alias("lsetfilecon", "setfilecon"))]
+    #[doc(alias("lsetfilecon"))]
+    #[doc(alias("setfilecon"))]
     pub fn set_for_path(
         &self,
         path: impl AsRef<Path>,
@@ -968,7 +968,8 @@ impl<'t> SecurityContext<'t> {
     /// Check the validity of an SELinux context.
     ///
     /// See: `security_check_context()`, `is_selinux_enabled()`.
-    #[doc(alias("security_check_context", "is_selinux_enabled"))]
+    #[doc(alias("security_check_context"))]
+    #[doc(alias("is_selinux_enabled"))]
     #[must_use]
     pub fn check(&self) -> Option<bool> {
         let proc: unsafe extern "C" fn(_) -> _ = if self.is_raw {
@@ -1317,7 +1318,8 @@ impl SecurityContextList {
     /// that are reachable from the specified `reachable_from_context`.
     ///
     /// See: `get_ordered_context_list()`, `get_ordered_context_list_with_level()`.
-    #[doc(alias("get_ordered_context_list", "get_ordered_context_list_with_level"))]
+    #[doc(alias("get_ordered_context_list"))]
+    #[doc(alias("get_ordered_context_list_with_level"))]
     pub fn of_se_user(
         se_user: &str,
         level: Option<&str>,
@@ -1843,7 +1845,8 @@ pub enum ProtectionCheckingMode {
 /// Determine the support of SELinux in the running kernel.
 ///
 /// See: `is_selinux_enabled()`, `is_selinux_mls_enabled()`.
-#[doc(alias("is_selinux_enabled", "is_selinux_mls_enabled"))]
+#[doc(alias("is_selinux_enabled"))]
+#[doc(alias("is_selinux_mls_enabled"))]
 #[must_use]
 pub fn kernel_support() -> KernelSupport {
     if unsafe { selinux_sys::is_selinux_mls_enabled() } != 0 {
@@ -1888,7 +1891,8 @@ pub fn current_mode() -> SELinuxMode {
 /// Set the current SELinux enforcing mode.
 ///
 /// See: `security_disable()`, `security_setenforce()`.
-#[doc(alias("security_disable", "security_setenforce"))]
+#[doc(alias("security_disable"))]
+#[doc(alias("security_setenforce"))]
 pub fn set_current_mode(new_mode: SELinuxMode) -> Result<()> {
     let (r, proc_name) = match new_mode {
         SELinuxMode::NotRunning => {
@@ -1914,7 +1918,8 @@ pub fn set_current_mode(new_mode: SELinuxMode) -> Result<()> {
 /// and permissions.
 ///
 /// See: `security_reject_unknown()`, `security_deny_unknown()`.
-#[doc(alias("security_reject_unknown", "security_deny_unknown"))]
+#[doc(alias("security_reject_unknown"))]
+#[doc(alias("security_deny_unknown"))]
 pub fn undefined_handling() -> Result<UndefinedHandling> {
     let mut reject_unknown = unsafe { (OptionalNativeFunctions::get().security_reject_unknown)() };
     if reject_unknown == -1 {
@@ -2043,7 +2048,8 @@ pub fn flush_class_cache() -> Result<()> {
 /// Get the SELinux user name and level for a given Linux user name.
 ///
 /// See: `getseuser()`, `getseuserbyname()`.
-#[doc(alias("getseuser", "getseuserbyname"))]
+#[doc(alias("getseuser"))]
+#[doc(alias("getseuserbyname"))]
 pub fn se_user_and_level(
     user_name: &str,
     service: Option<&str>,
