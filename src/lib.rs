@@ -268,7 +268,7 @@ impl<'t> SecurityContext<'t> {
     /// Return the security context of the current process.
     ///
     /// See: `getcon()`.
-    #[doc(alias="getcon")]
+    #[doc(alias = "getcon")]
     pub fn current(raw_format: bool) -> Result<Self> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getcon_raw, "getcon_raw()")
@@ -284,7 +284,7 @@ impl<'t> SecurityContext<'t> {
     /// Return the security context of the current process before the last exec.
     ///
     /// See: `getprevcon()`.
-    #[doc(alias="getprevcon")]
+    #[doc(alias = "getprevcon")]
     pub fn previous(raw_format: bool) -> Result<Self> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getprevcon_raw, "getprevcon_raw()")
@@ -300,7 +300,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the current security context of the process to this context.
     ///
     /// See: `setcon()`.
-    #[doc(alias="setcon")]
+    #[doc(alias = "setcon")]
     pub fn set_as_current(&self) -> Result<()> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if self.is_raw {
             (selinux_sys::setcon_raw, "setcon_raw()")
@@ -314,7 +314,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the context of a kernel initial security identifier specified by name.
     ///
     /// See: `security_get_initial_context()`.
-    #[doc(alias="security_get_initial_context")]
+    #[doc(alias = "security_get_initial_context")]
     pub fn of_initial_kernel_context(name: &str, raw_format: bool) -> Result<Self> {
         let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if raw_format {
             let proc_name = "security_get_initial_context_raw()";
@@ -334,7 +334,7 @@ impl<'t> SecurityContext<'t> {
     /// from the policy.
     ///
     /// See: `matchmediacon()`.
-    #[doc(alias="matchmediacon")]
+    #[doc(alias = "matchmediacon")]
     pub fn of_media_type(name: &str) -> Result<Self> {
         let c_name = str_to_c_string(name)?;
         let mut context: *mut c_char = ptr::null_mut();
@@ -345,7 +345,7 @@ impl<'t> SecurityContext<'t> {
     /// Return the process context for the specified process identifier.
     ///
     /// See: `getpidcon()`.
-    #[doc(alias="getpidcon")]
+    #[doc(alias = "getpidcon")]
     pub fn of_process(process_id: pid_t, raw_format: bool) -> Result<Self> {
         let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if raw_format {
             (selinux_sys::getpidcon_raw, "getpidcon_raw()")
@@ -362,7 +362,7 @@ impl<'t> SecurityContext<'t> {
     /// to the internal system format (raw).
     ///
     /// See: `selinux_trans_to_raw_context()`.
-    #[doc(alias="selinux_trans_to_raw_context")]
+    #[doc(alias = "selinux_trans_to_raw_context")]
     pub fn to_raw_format(&self) -> Result<Self> {
         if self.is_raw {
             return Err(Error::UnexpectedSecurityContextFormat);
@@ -379,7 +379,7 @@ impl<'t> SecurityContext<'t> {
     /// the human-readable format (translated).
     ///
     /// See: `selinux_raw_to_trans_context()`.
-    #[doc(alias="selinux_raw_to_trans_context")]
+    #[doc(alias = "selinux_raw_to_trans_context")]
     pub fn to_translated_format(&self) -> Result<Self> {
         if !self.is_raw {
             return Err(Error::UnexpectedSecurityContextFormat);
@@ -396,7 +396,7 @@ impl<'t> SecurityContext<'t> {
     /// authorized contexts could not be obtained.
     ///
     /// See: `manual_user_enter_context()`.
-    #[doc(alias="manual_user_enter_context")]
+    #[doc(alias = "manual_user_enter_context")]
     pub fn of_se_user_with_selected_context(se_user: &str, raw_format: bool) -> Result<Self> {
         let mut context: *mut c_char = ptr::null_mut();
         let c_se_user = str_to_c_string(se_user)?;
@@ -409,10 +409,10 @@ impl<'t> SecurityContext<'t> {
     ///
     /// See: `get_default_context()`, `get_default_context_with_level()`,
     /// `get_default_context_with_role()`, `get_default_context_with_rolelevel()`.
-    #[doc(alias="get_default_context")]
-    #[doc(alias="get_default_context_with_level")]
-    #[doc(alias="get_default_context_with_role")]
-    #[doc(alias="get_default_context_with_rolelevel")]
+    #[doc(alias = "get_default_context")]
+    #[doc(alias = "get_default_context_with_level")]
+    #[doc(alias = "get_default_context_with_role")]
+    #[doc(alias = "get_default_context_with_rolelevel")]
     pub fn default_for_se_user(
         se_user: &str,
         role: Option<&str>,
@@ -489,7 +489,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the context used for executing a new process.
     ///
     /// See: `getexeccon()`.
-    #[doc(alias="getexeccon")]
+    #[doc(alias = "getexeccon")]
     pub fn of_next_exec(raw_format: bool) -> Result<Option<Self>> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getexeccon_raw, "getexeccon_raw()")
@@ -504,7 +504,7 @@ impl<'t> SecurityContext<'t> {
     /// policy behavior.
     ///
     /// See: `setexeccon()`.
-    #[doc(alias="setexeccon")]
+    #[doc(alias = "setexeccon")]
     pub fn set_default_context_for_next_exec() -> Result<()> {
         let r = unsafe { selinux_sys::setexeccon(ptr::null()) };
         ret_val_to_result("setexeccon()", r)
@@ -513,7 +513,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the context used for the next `execve()` call.
     ///
     /// See: `setexeccon()`.
-    #[doc(alias="setexeccon")]
+    #[doc(alias = "setexeccon")]
     pub fn set_for_next_exec(&self) -> Result<()> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if self.is_raw {
             (selinux_sys::setexeccon_raw, "setexeccon_raw()")
@@ -527,7 +527,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the context used for creating a new file system object.
     ///
     /// See: `getfscreatecon()`.
-    #[doc(alias="getfscreatecon")]
+    #[doc(alias = "getfscreatecon")]
     pub fn of_new_file_system_objects(raw_format: bool) -> Result<Option<Self>> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getfscreatecon_raw, "getfscreatecon_raw()")
@@ -542,7 +542,7 @@ impl<'t> SecurityContext<'t> {
     /// default policy behavior.
     ///
     /// See: `setfscreatecon()`.
-    #[doc(alias="setfscreatecon")]
+    #[doc(alias = "setfscreatecon")]
     pub fn set_default_context_for_new_file_system_objects() -> Result<()> {
         let r = unsafe { selinux_sys::setfscreatecon(ptr::null()) };
         ret_val_to_result("setfscreatecon()", r)
@@ -551,7 +551,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the context used for creating a new file system object.
     ///
     /// See: `setfscreatecon()`.
-    #[doc(alias="setfscreatecon")]
+    #[doc(alias = "setfscreatecon")]
     pub fn set_for_new_file_system_objects(&self, raw_format: bool) -> Result<()> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::setfscreatecon_raw, "setfscreatecon_raw()")
@@ -565,7 +565,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the context used for creating a new kernel key ring.
     ///
     /// See: `getkeycreatecon()`.
-    #[doc(alias="getkeycreatecon")]
+    #[doc(alias = "getkeycreatecon")]
     pub fn of_new_kernel_key_rings(raw_format: bool) -> Result<Option<Self>> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getkeycreatecon_raw, "getkeycreatecon_raw()")
@@ -580,7 +580,7 @@ impl<'t> SecurityContext<'t> {
     /// default policy behavior.
     ///
     /// See: `setkeycreatecon()`.
-    #[doc(alias="setkeycreatecon")]
+    #[doc(alias = "setkeycreatecon")]
     pub fn set_default_context_for_new_kernel_key_rings() -> Result<()> {
         let r = unsafe { selinux_sys::setkeycreatecon(ptr::null()) };
         ret_val_to_result("setkeycreatecon()", r)
@@ -589,7 +589,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the context used for creating a new kernel key ring.
     ///
     /// See: `setkeycreatecon()`.
-    #[doc(alias="setkeycreatecon")]
+    #[doc(alias = "setkeycreatecon")]
     pub fn set_for_new_kernel_key_rings(&self, raw_format: bool) -> Result<()> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::setkeycreatecon_raw, "setkeycreatecon_raw()")
@@ -603,7 +603,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the context used for creating a new labeled network socket.
     ///
     /// See: `getsockcreatecon()`.
-    #[doc(alias="getsockcreatecon")]
+    #[doc(alias = "getsockcreatecon")]
     pub fn of_new_labeled_sockets(raw_format: bool) -> Result<Option<Self>> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::getsockcreatecon_raw, "getsockcreatecon_raw()")
@@ -618,7 +618,7 @@ impl<'t> SecurityContext<'t> {
     /// default policy behavior.
     ///
     /// See: `setsockcreatecon()`.
-    #[doc(alias="setsockcreatecon")]
+    #[doc(alias = "setsockcreatecon")]
     pub fn set_default_context_for_new_labeled_sockets() -> Result<()> {
         let r = unsafe { selinux_sys::setsockcreatecon(ptr::null()) };
         ret_val_to_result("setsockcreatecon()", r)
@@ -627,7 +627,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the context used for creating a new labeled network sockets.
     ///
     /// See: `setsockcreatecon()`.
-    #[doc(alias="setsockcreatecon")]
+    #[doc(alias = "setsockcreatecon")]
     pub fn set_for_new_labeled_sockets(&self, raw_format: bool) -> Result<()> {
         let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
             (selinux_sys::setsockcreatecon_raw, "setsockcreatecon_raw()")
@@ -641,8 +641,8 @@ impl<'t> SecurityContext<'t> {
     /// Get the context associated with the given path in the file system.
     ///
     /// See: `lgetfilecon()`, `getfilecon()`.
-    #[doc(alias="lgetfilecon")]
-    #[doc(alias="getfilecon")]
+    #[doc(alias = "lgetfilecon")]
+    #[doc(alias = "getfilecon")]
     pub fn of_path(
         path: impl AsRef<Path>,
         follow_symbolic_links: bool,
@@ -677,7 +677,7 @@ impl<'t> SecurityContext<'t> {
     /// Set the file context to the system defaults.
     ///
     /// See: `selinux_lsetfilecon_default()`.
-    #[doc(alias="selinux_lsetfilecon_default")]
+    #[doc(alias = "selinux_lsetfilecon_default")]
     pub fn set_default_for_path(path: impl AsRef<Path>) -> Result<()> {
         let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
         let r = unsafe { selinux_sys::selinux_lsetfilecon_default(c_path.as_ptr()) };
@@ -687,8 +687,8 @@ impl<'t> SecurityContext<'t> {
     /// Set the SELinux security context of a file system object.
     ///
     /// See: `lsetfilecon()`, `setfilecon()`.
-    #[doc(alias="lsetfilecon")]
-    #[doc(alias="setfilecon")]
+    #[doc(alias = "lsetfilecon")]
+    #[doc(alias = "setfilecon")]
     pub fn set_for_path(
         &self,
         path: impl AsRef<Path>,
@@ -711,7 +711,7 @@ impl<'t> SecurityContext<'t> {
     /// Get the SELinux security context of a file system object.
     ///
     /// See: `fgetfilecon()`.
-    #[doc(alias="fgetfilecon")]
+    #[doc(alias = "fgetfilecon")]
     pub fn of_file<T>(fd: &T, raw_format: bool) -> Result<Option<Self>>
     where
         T: AsRawFd,
@@ -743,7 +743,7 @@ impl<'t> SecurityContext<'t> {
     /// by an open file descriptor.
     ///
     /// See: `fsetfilecon()`.
-    #[doc(alias="fsetfilecon")]
+    #[doc(alias = "fsetfilecon")]
     pub fn set_for_file<T>(&self, fd: &T) -> Result<()>
     where
         T: AsRawFd,
@@ -762,7 +762,7 @@ impl<'t> SecurityContext<'t> {
     /// open file descriptor.
     ///
     /// See: `getpeercon()`.
-    #[doc(alias="getpeercon")]
+    #[doc(alias = "getpeercon")]
     pub fn of_peer_socket<T>(socket: &T, raw_format: bool) -> Result<Self>
     where
         T: AsRawFd,
@@ -782,7 +782,7 @@ impl<'t> SecurityContext<'t> {
     /// `target_context` via `target_class` with the requested access vector.
     ///
     /// See: `security_compute_av_flags()`.
-    #[doc(alias="security_compute_av_flags")]
+    #[doc(alias = "security_compute_av_flags")]
     pub fn query_access_decision(
         &self,
         target_context: &Self,
@@ -823,7 +823,7 @@ impl<'t> SecurityContext<'t> {
     /// class based on a SID pair.
     ///
     /// See: `security_compute_create_name()`.
-    #[doc(alias="security_compute_create_name")]
+    #[doc(alias = "security_compute_create_name")]
     pub fn of_labeling_decision(
         &self,
         target_context: &Self,
@@ -860,7 +860,7 @@ impl<'t> SecurityContext<'t> {
     /// Compute the new context to use when relabeling an object.
     ///
     /// See: `security_compute_relabel()`.
-    #[doc(alias="security_compute_relabel")]
+    #[doc(alias = "security_compute_relabel")]
     pub fn of_relabeling_decision(
         &self,
         target_context: &Self,
@@ -895,7 +895,7 @@ impl<'t> SecurityContext<'t> {
     /// object instance.
     ///
     /// See: `security_compute_member()`.
-    #[doc(alias="security_compute_member")]
+    #[doc(alias = "security_compute_member")]
     pub fn of_polyinstantiation_member_decision(
         &self,
         target_context: &Self,
@@ -933,7 +933,7 @@ impl<'t> SecurityContext<'t> {
     /// constraints in the loaded policy.
     ///
     /// See: `security_validatetrans()`.
-    #[doc(alias="security_validatetrans")]
+    #[doc(alias = "security_validatetrans")]
     pub fn validate_transition(
         &self,
         target_context: &Self,
@@ -968,8 +968,8 @@ impl<'t> SecurityContext<'t> {
     /// Check the validity of an SELinux context.
     ///
     /// See: `security_check_context()`, `is_selinux_enabled()`.
-    #[doc(alias="security_check_context")]
-    #[doc(alias="is_selinux_enabled")]
+    #[doc(alias = "security_check_context")]
+    #[doc(alias = "is_selinux_enabled")]
     #[must_use]
     pub fn check(&self) -> Option<bool> {
         let proc: unsafe extern "C" fn(_) -> _ = if self.is_raw {
@@ -992,7 +992,7 @@ impl<'t> SecurityContext<'t> {
     /// Canonicalize this security context.
     ///
     /// See: `security_canonicalize_context()`.
-    #[doc(alias="security_canonicalize_context")]
+    #[doc(alias = "security_canonicalize_context")]
     pub fn canonicalize(&self) -> Result<Self> {
         let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if self.is_raw {
             let proc_name = "security_canonicalize_context_raw()";
@@ -1011,7 +1011,7 @@ impl<'t> SecurityContext<'t> {
     /// on the target context.
     ///
     /// See: `selinux_check_access()`.
-    #[doc(alias="selinux_check_access")]
+    #[doc(alias = "selinux_check_access")]
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn check_access(
         &self,
@@ -1040,7 +1040,7 @@ impl<'t> SecurityContext<'t> {
     /// a securetty context.
     ///
     /// See: `selinux_check_securetty_context()`.
-    #[doc(alias="selinux_check_securetty_context")]
+    #[doc(alias = "selinux_check_securetty_context")]
     #[must_use]
     pub fn check_securetty_context(&self) -> bool {
         let r = unsafe { selinux_sys::selinux_check_securetty_context(self.context.as_ptr()) };
@@ -1050,7 +1050,7 @@ impl<'t> SecurityContext<'t> {
     /// Check whether SELinux context type is customizable by the administrator.
     ///
     /// See: `is_context_customizable()`.
-    #[doc(alias="is_context_customizable")]
+    #[doc(alias = "is_context_customizable")]
     pub fn is_customizable(&self) -> Result<bool> {
         let r = unsafe { selinux_sys::is_context_customizable(self.context.as_ptr()) };
         if r == -1 {
@@ -1063,7 +1063,7 @@ impl<'t> SecurityContext<'t> {
     /// Return the color string for this SELinux security context.
     ///
     /// See: `selinux_raw_context_to_color()`.
-    #[doc(alias="selinux_raw_context_to_color")]
+    #[doc(alias = "selinux_raw_context_to_color")]
     pub fn to_color(&self) -> Result<SecurityContextColors> {
         if !self.is_raw {
             let raw_context = self.to_raw_format()?;
@@ -1092,7 +1092,7 @@ impl<'t> SecurityContext<'t> {
     /// the `user` component.
     ///
     /// See: `selinux_file_context_cmp()`.
-    #[doc(alias="selinux_file_context_cmp")]
+    #[doc(alias = "selinux_file_context_cmp")]
     #[must_use]
     pub fn compare_user_insensitive(&self, other: &Self) -> cmp::Ordering {
         let r = unsafe {
@@ -1106,7 +1106,7 @@ impl<'t> SecurityContext<'t> {
     /// context required by the policy file contexts file.
     ///
     /// See: `selinux_file_context_verify()`.
-    #[doc(alias="selinux_file_context_verify")]
+    #[doc(alias = "selinux_file_context_verify")]
     pub fn verify_file_context(
         path: impl AsRef<Path>,
         mode: Option<FileAccessMode>,
@@ -1271,7 +1271,7 @@ impl<'t> SecurityContext<'t> {
 
 impl<'t> Drop for SecurityContext<'t> {
     /// See: `freecon()`.
-    #[doc(alias="freecon")]
+    #[doc(alias = "freecon")]
     fn drop(&mut self) {
         let context = self.context.as_ptr();
         self.context = ptr::NonNull::dangling();
@@ -1318,8 +1318,8 @@ impl SecurityContextList {
     /// that are reachable from the specified `reachable_from_context`.
     ///
     /// See: `get_ordered_context_list()`, `get_ordered_context_list_with_level()`.
-    #[doc(alias="get_ordered_context_list")]
-    #[doc(alias="get_ordered_context_list_with_level")]
+    #[doc(alias = "get_ordered_context_list")]
+    #[doc(alias = "get_ordered_context_list_with_level")]
     pub fn of_se_user(
         se_user: &str,
         level: Option<&str>,
@@ -1400,7 +1400,7 @@ impl SecurityContextList {
     /// this list of contexts, and return a new context as selected by the user.
     ///
     /// See: `query_user_context()`.
-    #[doc(alias="query_user_context")]
+    #[doc(alias = "query_user_context")]
     pub fn user_selected_context(&self, raw_format: bool) -> Result<SecurityContext> {
         let mut context: *mut c_char = ptr::null_mut();
         let r =
@@ -1411,7 +1411,7 @@ impl SecurityContextList {
 
 impl Drop for SecurityContextList {
     /// See: `freeconary()`.
-    #[doc(alias="freeconary")]
+    #[doc(alias = "freeconary")]
     fn drop(&mut self) {
         let context_list = self.context_list.as_ptr();
         self.context_list = ptr::NonNull::dangling();
@@ -1447,7 +1447,7 @@ pub struct SecurityClass(selinux_sys::security_class_t);
 
 impl fmt::Display for SecurityClass {
     /// See: `security_class_to_string()`.
-    #[doc(alias="security_class_to_string")]
+    #[doc(alias = "security_class_to_string")]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name_ptr = unsafe { selinux_sys::security_class_to_string(self.0) };
         if name_ptr.is_null() {
@@ -1480,7 +1480,7 @@ impl SecurityClass {
     /// if such class exists.
     ///
     /// See: `string_to_security_class()`.
-    #[doc(alias="string_to_security_class")]
+    #[doc(alias = "string_to_security_class")]
     pub fn from_name(name: &str) -> Result<Self> {
         let c_name = str_to_c_string(name)?;
         let r = unsafe { selinux_sys::string_to_security_class(c_name.as_ptr()) };
@@ -1499,7 +1499,7 @@ impl SecurityClass {
     /// # Safety
     ///
     /// The returned string must not be **modified** or **freed**.
-    #[doc(alias="security_av_perm_to_string")]
+    #[doc(alias = "security_av_perm_to_string")]
     pub unsafe fn access_vector_bit_name(
         &self,
         access_vector: selinux_sys::access_vector_t,
@@ -1517,7 +1517,7 @@ impl SecurityClass {
     /// security class.
     ///
     /// See: `string_to_av_perm()`.
-    #[doc(alias="string_to_av_perm")]
+    #[doc(alias = "string_to_av_perm")]
     pub fn access_vector_bit(&self, name: &str) -> Result<selinux_sys::access_vector_t> {
         let c_name = str_to_c_string(name)?;
         let r = unsafe { selinux_sys::string_to_av_perm(self.0, c_name.as_ptr()) };
@@ -1533,7 +1533,7 @@ impl SecurityClass {
     /// class and `access_vector`, which may have multiple bits set.
     ///
     /// See: `security_av_string()`.
-    #[doc(alias="security_av_string")]
+    #[doc(alias = "security_av_string")]
     pub fn full_access_vector_name(
         &self,
         access_vector: selinux_sys::access_vector_t,
@@ -1553,7 +1553,7 @@ impl TryFrom<FileAccessMode> for SecurityClass {
     type Error = Error;
 
     /// See: `mode_to_security_class()`.
-    #[doc(alias="mode_to_security_class")]
+    #[doc(alias = "mode_to_security_class")]
     fn try_from(mode: FileAccessMode) -> Result<Self> {
         let r = unsafe { selinux_sys::mode_to_security_class(mode.mode()) };
         if r == 0 {
@@ -1588,7 +1588,7 @@ impl OpaqueSecurityContext {
     /// Return a new context initialized to a context string.
     ///
     /// See: `context_new()`.
-    #[doc(alias="context_new")]
+    #[doc(alias = "context_new")]
     pub fn new(context: &str) -> Result<Self> {
         let c_context = str_to_c_string(context)?;
         Self::from_c_str(&c_context)
@@ -1597,7 +1597,7 @@ impl OpaqueSecurityContext {
     /// Return a new context initialized to a context string.
     ///
     /// See: `context_new()`.
-    #[doc(alias="context_new")]
+    #[doc(alias = "context_new")]
     pub fn from_c_str(context: &CStr) -> Result<Self> {
         let context = unsafe { selinux_sys::context_new(context.as_ptr()) };
         ptr::NonNull::new(context).map_or_else(
@@ -1614,7 +1614,7 @@ impl OpaqueSecurityContext {
     /// Return the string value of this security context.
     ///
     /// See: `context_str()`.
-    #[doc(alias="context_str")]
+    #[doc(alias = "context_str")]
     pub fn to_c_string(&self) -> Result<CString> {
         let r = unsafe { selinux_sys::context_str(self.context.as_ptr()) };
         if r.is_null() {
@@ -1627,7 +1627,7 @@ impl OpaqueSecurityContext {
     /// Return the string value of this security context's type.
     ///
     /// See: `context_type_get()`.
-    #[doc(alias="context_type_get")]
+    #[doc(alias = "context_type_get")]
     pub fn the_type(&self) -> Result<CString> {
         self.get(selinux_sys::context_type_get, "context_type_get()")
     }
@@ -1635,7 +1635,7 @@ impl OpaqueSecurityContext {
     /// Set the type of this security context.
     ///
     /// See: `context_type_set()`.
-    #[doc(alias="context_type_set")]
+    #[doc(alias = "context_type_set")]
     pub fn set_type_str(&self, new_value: &str) -> Result<()> {
         let c_new_value = str_to_c_string(new_value)?;
         self.set(
@@ -1648,7 +1648,7 @@ impl OpaqueSecurityContext {
     /// Set the type of this security context.
     ///
     /// See: `context_type_set()`.
-    #[doc(alias="context_type_set")]
+    #[doc(alias = "context_type_set")]
     pub fn set_type(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_type_set()";
         self.set(selinux_sys::context_type_set, proc_name, new_value)
@@ -1657,7 +1657,7 @@ impl OpaqueSecurityContext {
     /// Return the string value of this security context's range.
     ///
     /// See: `context_range_get()`.
-    #[doc(alias="context_range_get")]
+    #[doc(alias = "context_range_get")]
     pub fn range(&self) -> Result<CString> {
         self.get(selinux_sys::context_range_get, "context_range_get()")
     }
@@ -1665,7 +1665,7 @@ impl OpaqueSecurityContext {
     /// Set the range of this security context.
     ///
     /// See: `context_range_set()`.
-    #[doc(alias="context_range_set")]
+    #[doc(alias = "context_range_set")]
     pub fn set_range_str(&self, new_value: &str) -> Result<()> {
         let c_new_value = str_to_c_string(new_value)?;
         self.set(
@@ -1678,7 +1678,7 @@ impl OpaqueSecurityContext {
     /// Set the range of this security context.
     ///
     /// See: `context_range_set()`.
-    #[doc(alias="context_range_set")]
+    #[doc(alias = "context_range_set")]
     pub fn set_range(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_range_set()";
         self.set(selinux_sys::context_range_set, proc_name, new_value)
@@ -1687,7 +1687,7 @@ impl OpaqueSecurityContext {
     /// Return the string value of this security context's role.
     ///
     /// See: `context_role_get()`.
-    #[doc(alias="context_role_get")]
+    #[doc(alias = "context_role_get")]
     pub fn role(&self) -> Result<CString> {
         self.get(selinux_sys::context_role_get, "context_role_get()")
     }
@@ -1695,7 +1695,7 @@ impl OpaqueSecurityContext {
     /// Set the role of this security context.
     ///
     /// See: `context_role_set()`.
-    #[doc(alias="context_role_set")]
+    #[doc(alias = "context_role_set")]
     pub fn set_role_str(&self, new_value: &str) -> Result<()> {
         let c_new_value = str_to_c_string(new_value)?;
         self.set(
@@ -1708,7 +1708,7 @@ impl OpaqueSecurityContext {
     /// Set the role of this security context.
     ///
     /// See: `context_role_set()`.
-    #[doc(alias="context_role_set")]
+    #[doc(alias = "context_role_set")]
     pub fn set_role(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_role_set()";
         self.set(selinux_sys::context_role_set, proc_name, new_value)
@@ -1717,7 +1717,7 @@ impl OpaqueSecurityContext {
     /// Return the string value of this security context's user.
     ///
     /// See: `context_user_get()`.
-    #[doc(alias="context_user_get")]
+    #[doc(alias = "context_user_get")]
     pub fn user(&self) -> Result<CString> {
         self.get(selinux_sys::context_user_get, "context_user_get()")
     }
@@ -1725,7 +1725,7 @@ impl OpaqueSecurityContext {
     /// Set the user of this security context.
     ///
     /// See: `context_user_set()`.
-    #[doc(alias="context_user_set")]
+    #[doc(alias = "context_user_set")]
     pub fn set_user_str(&self, new_value: &str) -> Result<()> {
         let c_new_value = str_to_c_string(new_value)?;
         self.set(
@@ -1738,7 +1738,7 @@ impl OpaqueSecurityContext {
     /// Set the user of this security context.
     ///
     /// See: `context_user_set()`.
-    #[doc(alias="context_user_set")]
+    #[doc(alias = "context_user_set")]
     pub fn set_user(&self, new_value: &CStr) -> Result<()> {
         let proc_name = "context_user_set()";
         self.set(selinux_sys::context_user_set, proc_name, new_value)
@@ -1773,7 +1773,7 @@ impl OpaqueSecurityContext {
 
 impl Drop for OpaqueSecurityContext {
     /// See: `context_free()`.
-    #[doc(alias="context_free")]
+    #[doc(alias = "context_free")]
     fn drop(&mut self) {
         let context = self.context.as_ptr();
         self.context = ptr::NonNull::dangling();
@@ -1783,7 +1783,7 @@ impl Drop for OpaqueSecurityContext {
 
 impl fmt::Display for OpaqueSecurityContext {
     /// See: `context_str()`.
-    #[doc(alias="context_str")]
+    #[doc(alias = "context_str")]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let ptr = unsafe { selinux_sys::context_str(self.context.as_ptr()) };
         let s = if ptr.is_null() {
@@ -1845,8 +1845,8 @@ pub enum ProtectionCheckingMode {
 /// Determine the support of SELinux in the running kernel.
 ///
 /// See: `is_selinux_enabled()`, `is_selinux_mls_enabled()`.
-#[doc(alias="is_selinux_enabled")]
-#[doc(alias="is_selinux_mls_enabled")]
+#[doc(alias = "is_selinux_enabled")]
+#[doc(alias = "is_selinux_mls_enabled")]
 #[must_use]
 pub fn kernel_support() -> KernelSupport {
     if unsafe { selinux_sys::is_selinux_mls_enabled() } != 0 {
@@ -1861,7 +1861,7 @@ pub fn kernel_support() -> KernelSupport {
 /// Determine how the system was set up to run SELinux.
 ///
 /// See: `selinux_getenforcemode()`.
-#[doc(alias="selinux_getenforcemode")]
+#[doc(alias = "selinux_getenforcemode")]
 pub fn boot_mode() -> Result<SELinuxMode> {
     let mut enforce = -1;
     if unsafe { selinux_sys::selinux_getenforcemode(&mut enforce) } == -1 {
@@ -1878,7 +1878,7 @@ pub fn boot_mode() -> Result<SELinuxMode> {
 /// Determine the current SELinux enforcing mode.
 ///
 /// See: `security_getenforce()`.
-#[doc(alias="security_getenforce")]
+#[doc(alias = "security_getenforce")]
 #[must_use]
 pub fn current_mode() -> SELinuxMode {
     match unsafe { selinux_sys::security_getenforce() } {
@@ -1891,8 +1891,8 @@ pub fn current_mode() -> SELinuxMode {
 /// Set the current SELinux enforcing mode.
 ///
 /// See: `security_disable()`, `security_setenforce()`.
-#[doc(alias="security_disable")]
-#[doc(alias="security_setenforce")]
+#[doc(alias = "security_disable")]
+#[doc(alias = "security_setenforce")]
 pub fn set_current_mode(new_mode: SELinuxMode) -> Result<()> {
     let (r, proc_name) = match new_mode {
         SELinuxMode::NotRunning => {
@@ -1918,8 +1918,8 @@ pub fn set_current_mode(new_mode: SELinuxMode) -> Result<()> {
 /// and permissions.
 ///
 /// See: `security_reject_unknown()`, `security_deny_unknown()`.
-#[doc(alias="security_reject_unknown")]
-#[doc(alias="security_deny_unknown")]
+#[doc(alias = "security_reject_unknown")]
+#[doc(alias = "security_deny_unknown")]
 pub fn undefined_handling() -> Result<UndefinedHandling> {
     let mut reject_unknown = unsafe { (OptionalNativeFunctions::get().security_reject_unknown)() };
     if reject_unknown == -1 {
@@ -1948,7 +1948,7 @@ pub fn undefined_handling() -> Result<UndefinedHandling> {
 /// `mprotect()` calls.
 ///
 /// See: `security_get_checkreqprot()`.
-#[doc(alias="security_get_checkreqprot")]
+#[doc(alias = "security_get_checkreqprot")]
 pub fn protection_checking_mode() -> Result<ProtectionCheckingMode> {
     match unsafe { selinux_sys::security_get_checkreqprot() } {
         -1 => Err(Error::last_io_error("security_get_checkreqprot()")),
@@ -2010,7 +2010,7 @@ where
 /// and permissions to the numbers actually used by the loaded system policy.
 ///
 /// See: `selinux_set_mapping()`.
-#[doc(alias="selinux_set_mapping")]
+#[doc(alias = "selinux_set_mapping")]
 pub fn set_dynamic_mapping<K, V, O>(mapping: &[(K, V)]) -> Result<()>
 where
     K: AsRef<str>,
@@ -2033,7 +2033,7 @@ where
 /// Flush the SELinux class cache, e.g., upon a policy reload.
 ///
 /// See: `selinux_flush_class_cache()`.
-#[doc(alias="selinux_flush_class_cache")]
+#[doc(alias = "selinux_flush_class_cache")]
 pub fn flush_class_cache() -> Result<()> {
     Error::clear_errno();
     unsafe { (OptionalNativeFunctions::get().selinux_flush_class_cache)() }
@@ -2048,8 +2048,8 @@ pub fn flush_class_cache() -> Result<()> {
 /// Get the SELinux user name and level for a given Linux user name.
 ///
 /// See: `getseuser()`, `getseuserbyname()`.
-#[doc(alias="getseuser")]
-#[doc(alias="getseuserbyname")]
+#[doc(alias = "getseuser")]
+#[doc(alias = "getseuserbyname")]
 pub fn se_user_and_level(
     user_name: &str,
     service: Option<&str>,
@@ -2101,7 +2101,7 @@ pub fn se_user_and_level(
 /// Force a reset of the loaded configuration.
 ///
 /// See: `selinux_reset_config()`.
-#[doc(alias="selinux_reset_config")]
+#[doc(alias = "selinux_reset_config")]
 pub fn reset_config() {
     unsafe { selinux_sys::selinux_reset_config() }
 }
@@ -2109,7 +2109,7 @@ pub fn reset_config() {
 /// Get the default type (domain) for role, and set type to refer to it.
 ///
 /// See: `get_default_type()`.
-#[doc(alias="get_default_type")]
+#[doc(alias = "get_default_type")]
 pub fn default_type_for_role(role: &str) -> Result<CAllocatedBlock<c_char>> {
     let mut c_type: *mut c_char = ptr::null_mut();
     let c_role = str_to_c_string(role)?;

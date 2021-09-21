@@ -48,7 +48,7 @@ impl<T: BackEnd> Labeler<T> {
     /// Initialize a labeling handle to be used for lookup operations.
     ///
     /// See: `selabel_open()`.
-    #[doc(alias="selabel_open")]
+    #[doc(alias = "selabel_open")]
     pub fn new(options: &[(c_int, *const c_void)], raw_format: bool) -> Result<Self> {
         use std::convert::TryInto;
 
@@ -81,7 +81,7 @@ impl<T: BackEnd> Labeler<T> {
     /// Obtain SELinux security context from a string label.
     ///
     /// See: `selabel_lookup()`.
-    #[doc(alias="selabel_lookup")]
+    #[doc(alias = "selabel_lookup")]
     pub fn look_up(&self, key: &CStr, key_type: c_int) -> Result<SecurityContext> {
         let (proc, proc_name): (unsafe extern "C" fn(_, _, _, _) -> _, _) = if self.is_raw {
             (selinux_sys::selabel_lookup_raw, "selabel_lookup_raw()")
@@ -98,7 +98,7 @@ impl<T: BackEnd> Labeler<T> {
     /// Return digest of spec files and list of files used.
     ///
     /// See: `selabel_digest()`.
-    #[doc(alias="selabel_digest")]
+    #[doc(alias = "selabel_digest")]
     pub fn digest(&'_ self) -> Result<Digest<'_>> {
         let mut digest_ptr: *mut u8 = ptr::null_mut();
         let mut digest_size = 0;
@@ -129,7 +129,7 @@ impl<T: BackEnd> Labeler<T> {
     /// Print SELinux labeling statistics.
     ///
     /// See: `selabel_stats()`.
-    #[doc(alias="selabel_stats")]
+    #[doc(alias = "selabel_stats")]
     pub fn log_statistics(&self) {
         unsafe { selinux_sys::selabel_stats(self.pointer.as_ptr()) }
     }
@@ -147,7 +147,7 @@ impl<T: BackEnd> PartialOrd<Labeler<T>> for Labeler<T> {
     /// Compare this instance to another one.
     ///
     /// See: `selabel_cmp()`.
-    #[doc(alias="selabel_cmp")]
+    #[doc(alias = "selabel_cmp")]
     fn partial_cmp(&self, other: &Labeler<T>) -> Option<cmp::Ordering> {
         let r = unsafe { selinux_sys::selabel_cmp(self.pointer.as_ptr(), other.pointer.as_ptr()) };
         match r {
@@ -169,7 +169,7 @@ impl Labeler<back_end::File> {
     /// Return [`Labeler`] with default parameters for `selinux_restorecon()`.
     ///
     /// See: `selinux_restorecon_default_handle()`.
-    #[doc(alias="selinux_restorecon_default_handle")]
+    #[doc(alias = "selinux_restorecon_default_handle")]
     pub fn restorecon_default(raw_format: bool) -> Result<Self> {
         let pointer = unsafe { selinux_sys::selinux_restorecon_default_handle() };
         ptr::NonNull::new(pointer)
@@ -185,7 +185,7 @@ impl Labeler<back_end::File> {
     /// Obtain SELinux security context from a path.
     ///
     /// See: `selabel_lookup()`.
-    #[doc(alias="selabel_lookup")]
+    #[doc(alias = "selabel_lookup")]
     pub fn look_up_by_path(
         &self,
         path: impl AsRef<Path>,
@@ -208,7 +208,7 @@ impl Labeler<back_end::File> {
     /// Obtain a best match SELinux security context.
     ///
     /// See: `selabel_lookup_best_match()`.
-    #[doc(alias="selabel_lookup_best_match")]
+    #[doc(alias = "selabel_lookup_best_match")]
     pub fn look_up_best_match_by_path(
         &self,
         path: impl AsRef<Path>,
@@ -263,7 +263,7 @@ impl Labeler<back_end::File> {
     /// Determine whether a direct or partial match is possible on a file path.
     ///
     /// See: `selabel_partial_match()`.
-    #[doc(alias="selabel_partial_match")]
+    #[doc(alias = "selabel_partial_match")]
     pub fn partial_match_by_path(&self, path: impl AsRef<Path>) -> Result<bool> {
         let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
         Ok(unsafe { selinux_sys::selabel_partial_match(self.pointer.as_ptr(), c_path.as_ptr()) })
@@ -273,7 +273,7 @@ impl Labeler<back_end::File> {
     /// to the supplied path.
     ///
     /// See: `selabel_get_digests_all_partial_matches()`.
-    #[doc(alias="selabel_get_digests_all_partial_matches")]
+    #[doc(alias = "selabel_get_digests_all_partial_matches")]
     pub fn get_digests_all_partial_matches_by_path(
         &self,
         path: impl AsRef<Path>,
