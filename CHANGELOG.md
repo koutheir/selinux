@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2021-09-21
+
+### Changed
+
+- Replace each `doc(alias(..))` directive by `doc(alias = ...)` directive.
+  This enhances compatibility with older versions of Rust.
+
+  Thank you [*ratmice*](https://github.com/ratmice).
+- Updated dependencies: `socketpair`.
+
 ## [0.2.3] - 2021-08-22
 
 ### Changed

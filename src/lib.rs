@@ -1,5 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.2.3")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.2.4")]
 #![allow(clippy::upper_case_acronyms)]
 
 /*!
