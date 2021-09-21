@@ -11,13 +11,13 @@ pub trait CallBack {
     /// Get the current call back function, if one has been set.
     ///
     /// See: `selinux_get_callback()`.
-    #[doc(alias("selinux_get_callback"))]
+    #[doc(alias="selinux_get_callback")]
     fn get_call_back() -> Option<Self::CallBackType>;
 
     /// Set or clear the call back function.
     ///
     /// See: `selinux_set_callback()`.
-    #[doc(alias("selinux_set_callback"))]
+    #[doc(alias="selinux_set_callback")]
     fn set_call_back(call_back: Option<Self::CallBackType>);
 }
 
