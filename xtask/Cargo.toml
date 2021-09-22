@@ -12,3 +12,4 @@ serde_json   = { version = "1.0" }
 log          = { version = "0.4" }
 simplelog    = { version = "0.10" }
 walkdir      = { version = "2.3" }
+thiserror    = { version = "1.0" }

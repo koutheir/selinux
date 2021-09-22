@@ -4,17 +4,17 @@ use std::{env, io};
 
 use log::info;
 
-// TODO(KAT): Use thiserror to provide better error messages.
-
 mod coverage;
+mod errors;
 mod utils;
 
 use crate::coverage::coverage;
+use crate::errors::{Error, Result};
 
 // https://rust-lang.github.io/rustup-components-history/
 static NIGHTLY_TOOLCHAIN: &str = "nightly-2021-09-20";
 
-fn main() -> io::Result<()> {
+fn main() -> Result<()> {
     let mut args = env::args_os();
     let target = args.nth(1);
     if let Some(target) = target.as_deref().and_then(OsStr::to_str) {
@@ -31,7 +31,7 @@ fn main() -> io::Result<()> {
 }
 
 /// Initialize logging based on the logging level specified on the command line.
-pub(crate) fn init_logging(verbose: bool) -> io::Result<()> {
+pub(crate) fn init_logging(verbose: bool) -> Result<()> {
     use simplelog::{
         ColorChoice, ConfigBuilder, LevelFilter, SimpleLogger, TermLogger, TerminalMode,
     };
@@ -58,7 +58,10 @@ pub(crate) fn init_logging(verbose: bool) -> io::Result<()> {
         ColorChoice::Auto,
     )
     .or_else(move |_err| SimpleLogger::init(level_filter, config))
-    .map_err(|_| io::Error::from(io::ErrorKind::AlreadyExists))
+    .map_err(|_| {
+        let err = io::ErrorKind::AlreadyExists.into();
+        Error::from_io("simplelog::loggers::simplelog::SimpleLogger::init", err)
+    })
 }
 
 struct Config {
@@ -69,10 +72,13 @@ struct Config {
 }
 
 impl Config {
-    fn new(target_args: Vec<OsString>) -> io::Result<Self> {
+    fn new(target_args: Vec<OsString>) -> Result<Self> {
         let workspace_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
             .parent()
-            .ok_or_else(|| io::Error::from(io::ErrorKind::InvalidInput))?;
+            .ok_or_else(|| {
+                let err = io::ErrorKind::NotFound.into();
+                Error::from_io_path("std::path::Path::parent", env!("CARGO_MANIFEST_DIR"), err)
+            })?;
 
         let target_dir = workspace_dir.join("target");
         let coverage_dir = target_dir.join("coverage");
@@ -87,14 +93,14 @@ impl Config {
     }
 }
 
-fn usage() -> io::Result<()> {
+fn usage() -> Result<()> {
     eprintln!("Please specify a target name, from one of the following targets:");
     eprintln!("    coverage.");
     eprintln!("You can also specify parameters after targets.");
     Ok(())
 }
 
-fn run_target(config: &Config, target: &str) -> io::Result<()> {
+fn run_target(config: &Config, target: &str) -> Result<()> {
     match target {
         "coverage" => coverage(config),
 

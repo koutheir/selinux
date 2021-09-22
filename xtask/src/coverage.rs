@@ -1,10 +1,11 @@
 use std::ffi::OsStr;
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::{fs, io, process};
+use std::{fs, process};
 
 use log::{debug, info};
 
+use crate::errors::{Error, Result};
 use crate::utils::*;
 use crate::{Config, NIGHTLY_TOOLCHAIN};
 
@@ -21,7 +22,7 @@ struct CargoTestMessage {
     filenames: Vec<PathBuf>,
 }
 
-pub(crate) fn coverage(config: &Config) -> io::Result<()> {
+pub(crate) fn coverage(config: &Config) -> Result<()> {
     let coverage_dir = config
         .coverage_dir
         .to_str()
@@ -78,7 +79,8 @@ pub(crate) fn coverage(config: &Config) -> io::Result<()> {
     let llvm_profdata = result?;
     let llvm_cov = find_executable_file(&sys_root, "llvm-cov")?;
 
-    fs::create_dir_all(&config.coverage_dir)?;
+    fs::create_dir_all(&config.coverage_dir)
+        .map_err(|r| Error::from_io_path("std::fs::create_dir_all", &config.coverage_dir, r))?;
 
     info!("Cleaning up old coverage files...");
     let profraw_files = list_files(&config.coverage_dir, "profraw")?;
@@ -95,7 +97,7 @@ pub(crate) fn coverage(config: &Config) -> io::Result<()> {
     export_coverage_html(config, &llvm_cov, &llvm_cov_common_args, &tests_paths)
 }
 
-fn rustfilt_version(config: &Config) -> io::Result<()> {
+fn rustfilt_version(config: &Config) -> Result<()> {
     let mut cmd = process::Command::new("rustfilt");
     cmd.stdout(process::Stdio::null()).arg("--version");
 
@@ -115,7 +117,7 @@ fn build_coverage_binaries(
     config: &Config,
     common_env: &[(&str, &OsStr)],
     common_args: &[&str],
-) -> io::Result<Vec<PathBuf>> {
+) -> Result<Vec<PathBuf>> {
     info!("Building coverage binaries...");
 
     let mut cmd = process::Command::new("cargo");
@@ -127,12 +129,15 @@ fn build_coverage_binaries(
         .args(&["--no-run", "--message-format=json"]);
 
     debug!("Running: {:?}", cmd);
-    let output = cmd.spawn()?.wait_with_output()?;
+    let output = cmd
+        .spawn()
+        .map_err(|r| Error::from_io_path("std::process::Command::spawn", "cargo", r))?
+        .wait_with_output()
+        .map_err(|r| Error::from_io_path("std::process::Child::wait_with_output", "cargo", r))?;
     if output.status.success() {
         Ok(test_binaries_from_cargo_test_messages(&output.stdout))
     } else {
-        let err = io::Error::new(io::ErrorKind::Other, "'cargo' command failed");
-        Err(err)
+        Err(Error::CommandFailed { name: "cargo" })
     }
 }
 
@@ -140,7 +145,7 @@ fn run_coverage_binaries(
     config: &Config,
     common_env: &[(&str, &OsStr)],
     common_args: &[&str],
-) -> io::Result<()> {
+) -> Result<()> {
     info!("Running coverage binaries...");
 
     let mut cmd = process::Command::new("cargo");
@@ -151,7 +156,7 @@ fn run_coverage_binaries(
     run_cmd(cmd, "cargo")
 }
 
-fn merge_coverage_profraw_files(config: &Config, llvm_profdata: &Path) -> io::Result<()> {
+fn merge_coverage_profraw_files(config: &Config, llvm_profdata: &Path) -> Result<()> {
     info!("Merging coverage data...");
 
     let profraw_files = list_files(&config.coverage_dir, "profraw")?;
@@ -168,10 +173,12 @@ fn export_coverage_lcov(
     llvm_cov: &Path,
     llvm_cov_common_args: &[&str],
     tests_paths: &[PathBuf],
-) -> io::Result<()> {
+) -> Result<()> {
     info!("Exporting coverage LCOV...");
 
-    let lcov_info = File::create(&config.coverage_dir.join("lcov.info"))?;
+    let lcov_path = config.coverage_dir.join("lcov.info");
+    let lcov_info = File::create(&lcov_path)
+        .map_err(|r| Error::from_io_path("std::fs::File::create", &lcov_path, r))?;
 
     let mut cmd = process::Command::new(llvm_cov);
     cmd.stdout(lcov_info)
@@ -190,7 +197,7 @@ fn export_coverage_html(
     llvm_cov: &Path,
     llvm_cov_common_args: &[&str],
     tests_paths: &[PathBuf],
-) -> io::Result<()> {
+) -> Result<()> {
     info!("Exporting coverage HTML...");
 
     let mut cmd = process::Command::new(llvm_cov);
@@ -213,7 +220,9 @@ fn export_coverage_html(
     run_cmd(cmd, "patch")
 }
 
-fn rustc_print_sysroot(config: &Config) -> io::Result<Vec<u8>> {
+fn rustc_print_sysroot(config: &Config) -> Result<Vec<u8>> {
+    let name = "rustc --print sysroot";
+
     let mut cmd = process::Command::new("rustc");
     cmd.current_dir(&config.workspace_dir)
         .stdout(process::Stdio::piped())
@@ -221,16 +230,19 @@ fn rustc_print_sysroot(config: &Config) -> io::Result<Vec<u8>> {
         .args(&["--print", "sysroot"]);
 
     debug!("Running: {:?}", cmd);
-    let output = cmd.spawn()?.wait_with_output()?;
+    let output = cmd
+        .spawn()
+        .map_err(|r| Error::from_io_path("std::process::Command::spawn", name, r))?
+        .wait_with_output()
+        .map_err(|r| Error::from_io_path("std::process::Child::wait_with_output", name, r))?;
     if output.status.success() {
         Ok(output.stdout)
     } else {
-        let err = io::Error::new(io::ErrorKind::Other, "'rustc' command failed");
-        Err(err)
+        Err(Error::CommandFailed { name })
     }
 }
 
-fn sys_root_of_nightly_toolchain(config: &Config) -> io::Result<PathBuf> {
+fn sys_root_of_nightly_toolchain(config: &Config) -> Result<PathBuf> {
     let mut result = rustc_print_sysroot(config);
     if result.is_err() {
         info!("Installing toolchain '{}'...", NIGHTLY_TOOLCHAIN);
@@ -257,7 +269,7 @@ fn test_binaries_from_cargo_test_messages(bytes: &[u8]) -> Vec<PathBuf> {
     bytes
         .split(|&c| c == b'\r' || c == b'\n')
         .map(|line| serde_json::from_slice::<CargoTestMessage>(line))
-        .filter_map(Result::ok)
+        .filter_map(std::result::Result::ok)
         .filter(|obj| obj.profile.test)
         .map(|obj| obj.filenames)
         .flatten()
