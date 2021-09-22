@@ -20,6 +20,10 @@ Please refer to the [official SELinux documentation], the manual pages of
 the [`libselinux`] native library, and the [`selinux-sys`] crate for a more
 complete picture on how to use this crate.
 
+If you cannot find a feature you are looking for by its name, but you know
+which `libselinux` APIs relate to it, then try searching the documentation
+by that API name.
+
 ## ⚓ Backward compatibility
 
 This crate requires `libselinux` version `2.8`, at least.
