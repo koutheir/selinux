@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2021-09-22
+
+### Changed
+
+- Replaced all shell scripts by an *xtask*.
+  
+  To generate coverage information, run:
+  ```
+  $ cargo xtask coverage
+  ```
+
 ## [0.2.4] - 2021-09-21
 
 ### Changed
