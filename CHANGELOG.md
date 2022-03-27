@@ -2,6 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2022-03-27
+
+### Changed
+
+- Updated dependencies: `simplelog`, `once_cell`, `tempfile`, `serial_test`, `socketpair`.
+- Updated copyright years.
+
 ## [0.2.5] - 2021-09-22
 
 ### Changed

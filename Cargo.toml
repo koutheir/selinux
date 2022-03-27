@@ -1,5 +1,2 @@
 [workspace]
-members = [
-    "xtask",
-    "selinux",
-]
+members = ["xtask", "selinux"]

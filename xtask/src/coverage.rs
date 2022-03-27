@@ -41,11 +41,13 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
         &format!("^{}/", coverage_dir),
     ];
 
+    let rustc_flags = OsStr::new("-Zinstrument-coverage -Clink-dead-code");
+
     let coverage_common_env: [(&str, &OsStr); 4] = [
         ("RUST_BACKTRACE", OsStr::new("1")),
         ("CARGO_INCREMENTAL", OsStr::new("0")),
-        ("RUSTFLAGS", OsStr::new("-Zinstrument-coverage")),
-        ("RUSTDOCFLAGS", OsStr::new("-Zinstrument-coverage")),
+        ("RUSTFLAGS", rustc_flags),
+        ("RUSTDOCFLAGS", rustc_flags),
     ];
 
     let coverage_common_args: [&str; 6] = [
@@ -268,7 +270,7 @@ fn sys_root_of_nightly_toolchain(config: &Config) -> Result<PathBuf> {
 fn test_binaries_from_cargo_test_messages(bytes: &[u8]) -> Vec<PathBuf> {
     bytes
         .split(|&c| c == b'\r' || c == b'\n')
-        .map(|line| serde_json::from_slice::<CargoTestMessage>(line))
+        .map(serde_json::from_slice::<CargoTestMessage>)
         .filter_map(std::result::Result::ok)
         .filter(|obj| obj.profile.test)
         .map(|obj| obj.filenames)
