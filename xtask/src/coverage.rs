@@ -7,9 +7,9 @@ use log::{debug, info};
 
 use crate::errors::{Error, Result};
 use crate::utils::*;
-use crate::{Config, NIGHTLY_TOOLCHAIN};
+use crate::Config;
 
-// https://doc.rust-lang.org/nightly/unstable-book/compiler-flags/source-based-code-coverage.html
+// https://doc.rust-lang.org/stable/rustc/instrument-coverage.html
 
 #[derive(Debug, serde_derive::Deserialize)]
 struct CargoTestMessageProfile {
@@ -41,7 +41,7 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
         &format!("^{}/", coverage_dir),
     ];
 
-    let rustc_flags = OsStr::new("-Zinstrument-coverage -Clink-dead-code");
+    let rustc_flags = OsStr::new("-Cinstrument-coverage -Clink-dead-code");
 
     let coverage_common_env: [(&str, &OsStr); 4] = [
         ("RUST_BACKTRACE", OsStr::new("1")),
@@ -50,8 +50,7 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
         ("RUSTDOCFLAGS", rustc_flags),
     ];
 
-    let coverage_common_args: [&str; 6] = [
-        &format!("+{}", NIGHTLY_TOOLCHAIN),
+    let coverage_common_args: [&str; 5] = [
         "test",
         "--workspace",
         "--tests",
@@ -61,19 +60,12 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
 
     rustfilt_version(config)?;
 
-    let sys_root = sys_root_of_nightly_toolchain(config)?;
+    let sys_root = sys_root_of_toolchain(config)?;
 
     let mut result = find_executable_file(&sys_root, "llvm-profdata");
     if result.is_err() {
         info!("Installing component 'llvm-tools-preview'...");
-        let args = [
-            "--quiet",
-            "component",
-            "add",
-            "--toolchain",
-            NIGHTLY_TOOLCHAIN,
-            "llvm-tools-preview",
-        ];
+        let args = ["--quiet", "component", "add", "llvm-tools-preview"];
         rustup(config, &args)?;
 
         result = find_executable_file(&sys_root, "llvm-profdata");
@@ -228,7 +220,6 @@ fn rustc_print_sysroot(config: &Config) -> Result<Vec<u8>> {
     let mut cmd = process::Command::new("rustc");
     cmd.current_dir(&config.workspace_dir)
         .stdout(process::Stdio::piped())
-        .arg(&format!("+{}", NIGHTLY_TOOLCHAIN))
         .args(&["--print", "sysroot"]);
 
     debug!("Running: {:?}", cmd);
@@ -244,17 +235,8 @@ fn rustc_print_sysroot(config: &Config) -> Result<Vec<u8>> {
     }
 }
 
-fn sys_root_of_nightly_toolchain(config: &Config) -> Result<PathBuf> {
-    let mut result = rustc_print_sysroot(config);
-    if result.is_err() {
-        info!("Installing toolchain '{}'...", NIGHTLY_TOOLCHAIN);
-        let args = ["--quiet", "toolchain", "install", NIGHTLY_TOOLCHAIN];
-        rustup(config, &args)?;
-
-        result = rustc_print_sysroot(config);
-    }
-
-    let mut bytes = result?;
+fn sys_root_of_toolchain(config: &Config) -> Result<PathBuf> {
+    let mut bytes = rustc_print_sysroot(config)?;
     if let Some(line_len) = bytes
         .as_slice()
         .split(|&c| c == b'\n' || c == b'\r')
@@ -273,7 +255,6 @@ fn test_binaries_from_cargo_test_messages(bytes: &[u8]) -> Vec<PathBuf> {
         .map(serde_json::from_slice::<CargoTestMessage>)
         .filter_map(std::result::Result::ok)
         .filter(|obj| obj.profile.test)
-        .map(|obj| obj.filenames)
-        .flatten()
+        .flat_map(|obj| obj.filenames)
         .collect()
 }

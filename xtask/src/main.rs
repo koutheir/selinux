@@ -11,9 +11,6 @@ mod utils;
 use crate::coverage::coverage;
 use crate::errors::{Error, Result};
 
-// https://rust-lang.github.io/rustup-components-history/
-static NIGHTLY_TOOLCHAIN: &str = "nightly-2021-09-20";
-
 fn main() -> Result<()> {
     let mut args = env::args_os();
     let target = args.nth(1);

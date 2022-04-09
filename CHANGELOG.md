@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2022-04-09
+
+### Changed
+
+- Test coverage generation now uses the *stable* tool chain.
+
 ## [0.2.6] - 2022-03-27
 
 ### Changed

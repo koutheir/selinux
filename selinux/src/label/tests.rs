@@ -138,8 +138,8 @@ fn digest() {
     let _ignored = format!("{:?}", &digest);
     let digest_clone = digest.clone();
     assert_eq!(digest, digest_clone);
-    assert!(!(digest < digest_clone));
-    assert!(!(digest > digest_clone));
+    assert!(digest >= digest_clone);
+    assert!(digest <= digest_clone);
     let mut ht = HashSet::new();
     ht.insert(digest_clone);
 }

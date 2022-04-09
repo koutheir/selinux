@@ -111,8 +111,8 @@ fn security_context_color() {
 
     let scc_clone = super::SecurityContextColors::clone(&scc);
     assert_eq!(scc, scc_clone);
-    assert!(!(scc < scc_clone));
-    assert!(!(scc > scc_clone));
+    assert!(scc >= scc_clone);
+    assert!(scc <= scc_clone);
     assert_ne!(scc, super::SecurityContextColors::default());
     let _ignored = format!("{:?}", &scc);
     let mut ht = HashSet::new();
@@ -534,8 +534,8 @@ fn rgb() {
     let rgb = super::RGB::new(0x22, 0, 0);
     let rgb_clone = super::RGB::clone(&rgb);
     assert_eq!(rgb, rgb_clone);
-    assert!(!(rgb < rgb_clone));
-    assert!(!(rgb > rgb_clone));
+    assert!(rgb >= rgb_clone);
+    assert!(rgb <= rgb_clone);
     assert_ne!(rgb, super::RGB::default());
     let _ignored = format!("{:?}", &rgb);
     let mut ht = HashSet::new();
@@ -547,8 +547,8 @@ fn layer_colors() {
     let lc = super::LayerColors::new(super::RGB::new(0x22, 0, 0), super::RGB::new(0x11, 0, 0));
     let lc_clone = super::LayerColors::clone(&lc);
     assert_eq!(lc, lc_clone);
-    assert!(!(lc < lc_clone));
-    assert!(!(lc > lc_clone));
+    assert!(lc >= lc_clone);
+    assert!(lc <= lc_clone);
     assert_ne!(lc, super::LayerColors::default());
     let _ignored = format!("{:?}", &lc);
     let mut ht = HashSet::new();
