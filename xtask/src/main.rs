@@ -44,7 +44,6 @@ pub(crate) fn init_logging(verbose: bool) -> Result<()> {
         .set_max_level(LevelFilter::Error)
         .set_target_level(LevelFilter::Error)
         .set_location_level(LevelFilter::Trace)
-        .set_time_to_local(false)
         .build();
 
     // The build server does not have a terminal, use a logger to STDERR as fallback.

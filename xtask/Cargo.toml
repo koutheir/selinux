@@ -10,6 +10,6 @@ serde        = { version = "1.0" }
 serde_derive = { version = "1.0" }
 serde_json   = { version = "1.0" }
 log          = { version = "0.4" }
-simplelog    = { version = "0.11" }
+simplelog    = { version = "0.12" }
 walkdir      = { version = "2.3" }
 thiserror    = { version = "1.0" }
