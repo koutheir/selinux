@@ -1235,7 +1235,7 @@ impl<'context> SecurityContext<'context> {
             .split(u8::is_ascii_whitespace)
             .filter(|&bytes| !bytes.is_empty())
             .take(8)
-            .flat_map(|bytes| strip_bytes_prefix(bytes, b"#"))
+            .flat_map(|bytes| bytes.strip_prefix(b"#"))
             .filter(|&bytes| !bytes.is_empty())
             .flat_map(|bytes| str::from_utf8(bytes).ok())
             .flat_map(|s| u32::from_str_radix(s, 16).ok())

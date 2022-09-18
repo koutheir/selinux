@@ -50,8 +50,6 @@ impl<T: BackEnd> Labeler<T> {
     /// See: `selabel_open()`.
     #[doc(alias = "selabel_open")]
     pub fn new(options: &[(c_int, *const c_void)], raw_format: bool) -> Result<Self> {
-        use std::convert::TryInto;
-
         let options: Vec<selinux_sys::selinux_opt> = options
             .iter()
             .map(|&(type_, value)| selinux_sys::selinux_opt {

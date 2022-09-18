@@ -337,18 +337,3 @@ impl OptionalNativeFunctions {
         0
     }
 }
-
-// This is used instead of `std::slice::strip_prefix()`, in order to reduce the
-// minimum supported Rust version for this crate.
-// This should be removed once we can assume at least Rust version 1.51.0.
-#[must_use]
-pub(crate) fn strip_bytes_prefix<'a, 'b>(slice: &'a [u8], prefix: &'b [u8]) -> Option<&'a [u8]> {
-    let prefix_len = prefix.len();
-    if prefix_len <= slice.len() {
-        let (head, tail) = slice.split_at(prefix_len);
-        if head == prefix {
-            return Some(tail);
-        }
-    }
-    None
-}
