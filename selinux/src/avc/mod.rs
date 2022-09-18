@@ -11,7 +11,7 @@ use std::{io, ptr};
 use reference_counted_singleton::{RCSRef, RefCountedSingleton};
 
 use crate::errors::{Error, Result};
-use crate::utils::*;
+use crate::utils::{ret_val_to_result, str_to_c_string};
 use crate::SecurityContext;
 
 /// Access vector cache.
@@ -26,7 +26,11 @@ fn get_or_init_access_vector_cache() -> &'static RefCountedSingleton<AccessVecto
         AVC = MaybeUninit::new(RefCountedSingleton::default());
     });
 
-    unsafe { AVC.as_ptr().as_ref().unwrap() }
+    unsafe {
+        AVC.as_ptr()
+            .as_ref()
+            .expect("Static must have a valid address")
+    }
 }
 
 impl AccessVectorCache {
@@ -65,7 +69,7 @@ impl AccessVectorCache {
         let avc = get_or_init_access_vector_cache();
 
         let result = avc.get_or_init(|| {
-            if unsafe { selinux_sys::avc_open(options_ptr, count) } == -1 {
+            if unsafe { selinux_sys::avc_open(options_ptr, count) } == -1_i32 {
                 Err(Error::last_io_error("avc_open()"))
             } else {
                 newly_initialized = true;
@@ -120,14 +124,15 @@ impl AccessVectorCache {
     ///
     /// See: `avc_get_initial_sid()`.
     #[doc(alias = "avc_get_initial_sid")]
-    pub fn kernel_initial_security_id<'t>(
-        &'t self,
+    pub fn kernel_initial_security_id<'context>(
+        &'context self,
         security_id_name: &str,
         raw_format: bool,
-    ) -> Result<SecurityID<'t>> {
+    ) -> Result<SecurityID<'context>> {
         let c_name = str_to_c_string(security_id_name)?;
         let mut security_id: *mut selinux_sys::security_id = ptr::null_mut();
-        if unsafe { selinux_sys::avc_get_initial_sid(c_name.as_ptr(), &mut security_id) } == -1 {
+        if unsafe { selinux_sys::avc_get_initial_sid(c_name.as_ptr(), &mut security_id) } == -1_i32
+        {
             Err(Error::last_io_error("avc_get_initial_sid()"))
         } else {
             Ok(SecurityID {
@@ -142,10 +147,10 @@ impl AccessVectorCache {
     ///
     /// See: `avc_sid_to_context()`.
     #[doc(alias = "avc_sid_to_context")]
-    pub fn security_context_from_security_id<'t>(
-        &'t self,
+    pub fn security_context_from_security_id<'context>(
+        &'context self,
         mut security_id: SecurityID,
-    ) -> Result<SecurityContext<'t>> {
+    ) -> Result<SecurityContext<'context>> {
         let is_raw = security_id.is_raw_format();
         let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if is_raw {
             let proc_name = "avc_sid_to_context_raw()";
@@ -164,10 +169,10 @@ impl AccessVectorCache {
     ///
     /// See: `avc_context_to_sid()`.
     #[doc(alias = "avc_context_to_sid")]
-    pub fn security_id_from_security_context<'t>(
-        &'t self,
+    pub fn security_id_from_security_context<'context>(
+        &'context self,
         context: SecurityContext,
-    ) -> Result<SecurityID<'t>> {
+    ) -> Result<SecurityID<'context>> {
         let is_raw = context.is_raw_format();
         let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if is_raw {
             let proc_name = "avc_context_to_sid_raw()";
@@ -178,7 +183,7 @@ impl AccessVectorCache {
         };
 
         let mut security_id: *mut selinux_sys::security_id = ptr::null_mut();
-        if unsafe { proc(context.as_ptr(), &mut security_id) } == -1 {
+        if unsafe { proc(context.as_ptr(), &mut security_id) } == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             Ok(SecurityID {
@@ -198,13 +203,13 @@ impl Drop for AccessVectorCache {
 
 /// SELinux security identifier.
 #[derive(Debug)]
-pub struct SecurityID<'t> {
+pub struct SecurityID<'id> {
     security_id: *mut selinux_sys::security_id,
     is_raw: bool,
-    _phantom_data: PhantomData<&'t selinux_sys::security_id>,
+    _phantom_data: PhantomData<&'id selinux_sys::security_id>,
 }
 
-impl<'t> SecurityID<'t> {
+impl<'id> SecurityID<'id> {
     /// Return `true` if the security identifier is unspecified.
     #[must_use]
     pub fn is_unspecified(&self) -> bool {
@@ -230,7 +235,7 @@ impl<'t> SecurityID<'t> {
     }
 }
 
-impl<'t> Default for SecurityID<'t> {
+impl<'id> Default for SecurityID<'id> {
     /// Return an unspecified security identifier.
     fn default() -> Self {
         Self {

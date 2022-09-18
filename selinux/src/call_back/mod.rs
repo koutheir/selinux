@@ -122,21 +122,24 @@ impl CallBack for SecurityPolicyReload {
 pub mod log_type {
     use std::os::raw::c_int;
 
-    /// AVC log entry.
-    pub use selinux_sys::SELINUX_AVC as AVC;
-
     /// Error log entry.
     pub use selinux_sys::SELINUX_ERROR as ERROR;
+
+    /// Warning log entry.
+    pub use selinux_sys::SELINUX_WARNING as WARNING;
 
     /// Informational log entry.
     pub use selinux_sys::SELINUX_INFO as INFO;
 
+    /// AVC log entry.
+    pub use selinux_sys::SELINUX_AVC as AVC;
+
+    // The rest of the constants were defined after version 2.8, so selinux_sys might not
+    // export them. We therefore define them manually.
+
     /// Policy loaded.
-    pub static POLICY_LOAD: c_int = 4;
+    pub static POLICY_LOAD: c_int = 4_i32;
 
     /// SELinux enforcing mode changed.
-    pub static SET_ENFORCE: c_int = 5;
-
-    /// Warning log entry.
-    pub use selinux_sys::SELINUX_WARNING as WARNING;
+    pub static SET_ENFORCE: c_int = 5_i32;
 }

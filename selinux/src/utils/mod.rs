@@ -26,7 +26,7 @@ pub(crate) fn os_str_to_c_string(s: &OsStr) -> Result<CString> {
     CString::new(s.as_bytes()).map_err(|_r| Error::PathIsInvalid(PathBuf::from(s)))
 }
 
-pub(crate) fn c_str_ptr_to_str<'a>(s: *const c_char) -> Result<&'a str> {
+pub(crate) fn c_str_ptr_to_str<'string>(s: *const c_char) -> Result<&'string str> {
     if s.is_null() {
         let err = io::ErrorKind::InvalidInput.into();
         Err(Error::from_io("utils::c_str_ptr_to_string()", err))
@@ -36,7 +36,7 @@ pub(crate) fn c_str_ptr_to_str<'a>(s: *const c_char) -> Result<&'a str> {
 }
 
 #[cfg(unix)]
-pub(crate) fn c_str_ptr_to_path<'a>(path_ptr: *const c_char) -> &'a Path {
+pub(crate) fn c_str_ptr_to_path<'string>(path_ptr: *const c_char) -> &'string Path {
     use std::os::unix::ffi::OsStrExt;
 
     let c_path = unsafe { CStr::from_ptr(path_ptr) };
@@ -60,7 +60,7 @@ pub(crate) fn get_static_path(
 }
 
 pub(crate) fn ret_val_to_result(proc_name: &'static str, result: c_int) -> Result<()> {
-    if result == -1 {
+    if result == -1_i32 {
         Err(Error::last_io_error(proc_name))
     } else {
         Ok(())
@@ -72,7 +72,7 @@ pub(crate) fn ret_val_to_result_with_path(
     result: c_int,
     path: &Path,
 ) -> Result<()> {
-    if result == -1 {
+    if result == -1_i32 {
         let err = io::Error::last_os_error();
         Err(Error::from_io_path(proc_name, path, err))
     } else {
@@ -133,7 +133,7 @@ impl<T> Drop for CAllocatedBlock<T> {
     }
 }
 
-/// Holds addresses of optionally-implemented functions by libselinux.
+/// Holds addresses of `libselinux`'s optionally-implemented functions.
 #[derive(Debug)]
 pub(crate) struct OptionalNativeFunctions {
     /// Since version 2.9
@@ -201,7 +201,7 @@ impl OptionalNativeFunctions {
         let mut r = Self::default();
         let lib_handle = Self::get_libselinux_handle();
         if !lib_handle.is_null() {
-            r.load_functions_addresses(lib_handle)
+            r.load_functions_addresses(lib_handle);
         }
         Error::clear_errno();
         r
@@ -263,7 +263,7 @@ impl OptionalNativeFunctions {
 
     unsafe extern "C" fn not_impl_security_reject_unknown() -> c_int {
         Error::set_errno(libc::ENOSYS);
-        -1
+        -1_i32
     }
 
     unsafe extern "C" fn not_impl_selabel_get_digests_all_partial_matches(
@@ -293,7 +293,7 @@ impl OptionalNativeFunctions {
         _newcon: *const c_char,
     ) -> c_int {
         Error::set_errno(libc::ENOSYS);
-        -1
+        -1_i32
     }
 
     unsafe extern "C" fn not_impl_selinux_flush_class_cache() {

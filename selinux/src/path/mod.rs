@@ -4,7 +4,7 @@ mod tests;
 use std::path::Path;
 
 use crate::errors::Result;
-use crate::utils::*;
+use crate::utils::get_static_path;
 
 /// Return the top-level SELinux configuration directory.
 ///

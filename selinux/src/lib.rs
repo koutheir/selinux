@@ -52,34 +52,34 @@ The `CHANGELOG.md` file details notable changes over time.
 // https://rust-lang.github.io/api-guidelines/checklist.html
 //
 
+#![allow(clippy::upper_case_acronyms)]
+#![warn(
+    missing_docs,
+    clippy::must_use_candidate,
+    clippy::default_numeric_fallback,
+    clippy::single_char_lifetime_names
+)]
+
 // Activate these lints to clean up the code and hopefully detect some issues.
-#![warn(missing_docs)]
-//#![allow(clippy::missing_inline_in_public_items)]
 /*
 #![warn(clippy::all, clippy::pedantic, clippy::restriction)]
 #![allow(
-    clippy::missing_docs_in_private_items,
+    clippy::doc_markdown,
+    clippy::exhaustive_structs,
+    clippy::missing_inline_in_public_items,
     clippy::implicit_return,
-    clippy::print_stdout,
+    clippy::missing_docs_in_private_items,
     clippy::missing_errors_doc,
-    clippy::module_name_repetitions,
-    clippy::too_many_lines,
-    clippy::expect_used,
-    clippy::panic,
-    clippy::unreachable,
-    clippy::else_if_without_else,
-    clippy::struct_excessive_bools,
+    clippy::undocumented_unsafe_blocks,
     clippy::shadow_reuse,
     clippy::shadow_unrelated,
-    clippy::integer_arithmetic,
-    clippy::explicit_deref_methods,
-    clippy::needless_pass_by_value,
-    clippy::copy_iterator,
-    clippy::wildcard_enum_match_arm,
-    clippy::filetype_is_file,
-    clippy::missing_inline_in_public_items,
-    clippy::semicolon_if_nothing_returned,
-    clippy::default_numeric_fallback,
+    clippy::separated_literal_suffix,
+    clippy::expect_used,
+    clippy::unused_self,
+    clippy::mod_module_files,
+    clippy::pub_use,
+    clippy::module_name_repetitions,
+    clippy::indexing_slicing
 )]
 */
 
@@ -135,6 +135,7 @@ pub struct RGB {
 
 impl RGB {
     /// Create a new instance.
+    #[must_use]
     pub fn new(red: u8, green: u8, blue: u8) -> Self {
         Self { red, green, blue }
     }
@@ -151,6 +152,7 @@ pub struct LayerColors {
 
 impl LayerColors {
     /// Create a new instance.
+    #[must_use]
     pub fn new(background: RGB, foreground: RGB) -> Self {
         Self {
             background,
@@ -174,6 +176,7 @@ pub struct SecurityContextColors {
 
 impl SecurityContextColors {
     /// Create a new instance.
+    #[must_use]
     pub fn new(
         user: LayerColors,
         role: LayerColors,
@@ -191,15 +194,15 @@ impl SecurityContextColors {
 
 /// SELinux security context.
 #[derive(Debug)]
-pub struct SecurityContext<'t> {
+pub struct SecurityContext<'context> {
     context: ptr::NonNull<c_char>,
     size: Option<usize>,
     is_raw: bool,
     context_owned: bool,
-    _phantom_data: PhantomData<&'t c_char>,
+    _phantom_data: PhantomData<&'context c_char>,
 }
 
-impl<'t> SecurityContext<'t> {
+impl<'context> SecurityContext<'context> {
     /// Return `false` if security context translation must be performed.
     #[must_use]
     pub fn is_raw_format(&self) -> bool {
@@ -235,7 +238,7 @@ impl<'t> SecurityContext<'t> {
             let bytes = unsafe { slice::from_raw_parts(self.context.as_ptr().cast(), size) };
             if bytes.is_empty() {
                 Ok(None)
-            } else if bytes.last().cloned() == Some(0) {
+            } else if bytes.last().copied() == Some(0) {
                 if let Ok(result) = CStr::from_bytes_with_nul(bytes) {
                     Ok(Some(Cow::Borrowed(result)))
                 } else {
@@ -259,7 +262,8 @@ impl<'t> SecurityContext<'t> {
     /// ⚠️ The returned instance does **NOT** own the provided context.
     /// When the returned instance get dropped, it will **NOT** deallocate
     /// the provided context.
-    pub fn from_c_str(c_context: &'t CStr, raw_format: bool) -> SecurityContext<'t> {
+    #[must_use]
+    pub fn from_c_str(c_context: &'context CStr, raw_format: bool) -> SecurityContext<'context> {
         Self {
             context: c_str_to_non_null_ptr(c_context),
             size: Some(c_context.to_bytes().len()),
@@ -662,8 +666,8 @@ impl<'t> SecurityContext<'t> {
 
         let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
         let mut context: *mut c_char = ptr::null_mut();
-        let r = unsafe { proc(c_path.as_ptr(), &mut context) };
-        if r == -1 {
+        let r: c_int = unsafe { proc(c_path.as_ptr(), &mut context) };
+        if r == -1_i32 {
             let err = io::Error::last_os_error();
             if let Some(libc::ENODATA) = err.raw_os_error() {
                 Ok(None)
@@ -672,7 +676,7 @@ impl<'t> SecurityContext<'t> {
             }
         } else {
             Ok(ptr::NonNull::new(context).map(|context| {
-                let size = if r >= 0 { Some(r as c_uint) } else { None };
+                let size = (r >= 0_i32).then(|| r as c_uint);
                 Self::from_ptr(context, size, raw_format)
             }))
         }
@@ -727,8 +731,8 @@ impl<'t> SecurityContext<'t> {
         };
 
         let mut context: *mut c_char = ptr::null_mut();
-        let r = unsafe { proc(fd.as_raw_fd(), &mut context) };
-        if r == -1 {
+        let r: c_int = unsafe { proc(fd.as_raw_fd(), &mut context) };
+        if r == -1_i32 {
             let err = io::Error::last_os_error();
             if let Some(libc::ENODATA) = err.raw_os_error() {
                 Ok(None)
@@ -737,7 +741,7 @@ impl<'t> SecurityContext<'t> {
             }
         } else {
             Ok(ptr::NonNull::new(context).map(|context| {
-                let size = if r >= 0 { Some(r as c_uint) } else { None };
+                let size = (r >= 0_i32).then(|| r as c_uint);
                 Self::from_ptr(context, size, raw_format)
             }))
         }
@@ -806,7 +810,7 @@ impl<'t> SecurityContext<'t> {
         };
 
         let mut result = MaybeUninit::<selinux_sys::av_decision>::uninit();
-        let r = unsafe {
+        let r: c_int = unsafe {
             proc(
                 self.context.as_ptr(),
                 target_context.context.as_ptr(),
@@ -816,7 +820,7 @@ impl<'t> SecurityContext<'t> {
             )
         };
 
-        if r == -1 {
+        if r == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             Ok(unsafe { result.assume_init() })
@@ -982,8 +986,8 @@ impl<'t> SecurityContext<'t> {
             selinux_sys::security_check_context
         };
 
-        if unsafe { proc(self.context.as_ptr()) } == -1 {
-            if unsafe { selinux_sys::is_selinux_enabled() } == 0 {
+        if unsafe { proc(self.context.as_ptr()) } == -1_i32 {
+            if unsafe { selinux_sys::is_selinux_enabled() } == 0_i32 {
                 None
             } else {
                 Some(false)
@@ -1027,7 +1031,7 @@ impl<'t> SecurityContext<'t> {
         let c_target_class = str_to_c_string(target_class)?;
         let c_requested_permission = str_to_c_string(requested_permission)?;
 
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::selinux_check_access(
                 self.context.as_ptr(),
                 target_context.context.as_ptr(),
@@ -1037,7 +1041,7 @@ impl<'t> SecurityContext<'t> {
             )
         };
 
-        Ok(r == 0)
+        Ok(r == 0_i32)
     }
 
     /// Check whether a SELinux tty security context is defined as
@@ -1047,8 +1051,7 @@ impl<'t> SecurityContext<'t> {
     #[doc(alias = "selinux_check_securetty_context")]
     #[must_use]
     pub fn check_securetty_context(&self) -> bool {
-        let r = unsafe { selinux_sys::selinux_check_securetty_context(self.context.as_ptr()) };
-        r == 0
+        unsafe { selinux_sys::selinux_check_securetty_context(self.context.as_ptr()) == 0_i32 }
     }
 
     /// Check whether SELinux context type is customizable by the administrator.
@@ -1056,11 +1059,11 @@ impl<'t> SecurityContext<'t> {
     /// See: `is_context_customizable()`.
     #[doc(alias = "is_context_customizable")]
     pub fn is_customizable(&self) -> Result<bool> {
-        let r = unsafe { selinux_sys::is_context_customizable(self.context.as_ptr()) };
-        if r == -1 {
+        let r: c_int = unsafe { selinux_sys::is_context_customizable(self.context.as_ptr()) };
+        if r == -1_i32 {
             Err(Error::last_io_error("is_context_customizable()"))
         } else {
-            Ok(r != 0)
+            Ok(r != 0_i32)
         }
     }
 
@@ -1075,11 +1078,11 @@ impl<'t> SecurityContext<'t> {
         }
 
         let mut color_ptr: *mut c_char = ptr::null_mut();
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::selinux_raw_context_to_color(self.context.as_ptr(), &mut color_ptr)
         };
 
-        if r == -1 {
+        if r == -1_i32 {
             Err(Error::last_io_error("selinux_raw_context_to_color()"))
         } else {
             CAllocatedBlock::new(color_ptr).map_or_else(
@@ -1099,11 +1102,11 @@ impl<'t> SecurityContext<'t> {
     #[doc(alias = "selinux_file_context_cmp")]
     #[must_use]
     pub fn compare_user_insensitive(&self, other: &Self) -> cmp::Ordering {
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::selinux_file_context_cmp(self.context.as_ptr(), other.context.as_ptr())
         };
 
-        r.cmp(&0)
+        r.cmp(&0_i32)
     }
 
     /// Compare the SELinux security context on disk to the default security
@@ -1121,16 +1124,16 @@ impl<'t> SecurityContext<'t> {
         Error::clear_errno();
 
         match unsafe { selinux_sys::selinux_file_context_verify(c_path.as_ptr(), mode) } {
-            -1 => Err(Error::from_io_path(
+            -1_i32 => Err(Error::from_io_path(
                 "selinux_file_context_verify()",
                 path.as_ref(),
                 io::Error::last_os_error(),
             )),
 
-            0 => {
+            0_i32 => {
                 let err = io::Error::last_os_error();
                 match err.raw_os_error() {
-                    None | Some(0) => Ok(false),
+                    None | Some(0_i32) => Ok(false),
 
                     _ => Err(Error::from_io_path(
                         "selinux_file_context_verify()",
@@ -1150,7 +1153,7 @@ impl<'t> SecurityContext<'t> {
         raw_format: bool,
     ) -> Result<Option<Self>> {
         let mut context: *mut c_char = ptr::null_mut();
-        if unsafe { proc(&mut context) } == -1 {
+        if unsafe { proc(&mut context) } == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             Ok(ptr::NonNull::new(context).map(|c| Self::from_ptr(c, None, raw_format)))
@@ -1173,7 +1176,7 @@ impl<'t> SecurityContext<'t> {
         context: *mut c_char,
         raw_format: bool,
     ) -> Result<Self> {
-        if result == -1 {
+        if result == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             ptr::NonNull::new(context).map_or_else(
@@ -1190,7 +1193,7 @@ impl<'t> SecurityContext<'t> {
         name: &str,
         raw_format: bool,
     ) -> Result<Self> {
-        if result == -1 {
+        if result == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             ptr::NonNull::new(context).map_or_else(
@@ -1213,7 +1216,7 @@ impl<'t> SecurityContext<'t> {
         process_id: pid_t,
         raw_format: bool,
     ) -> Result<Self> {
-        if result == -1 {
+        if result == -1_i32 {
             let err = io::Error::last_os_error();
             Err(Error::from_io_pid(proc_name, process_id, err))
         } else {
@@ -1244,7 +1247,7 @@ impl<'t> SecurityContext<'t> {
             })
             .collect();
 
-        if colors.len() == 8 {
+        if let Ok(colors) = <[RGB; 8]>::try_from(colors) {
             Ok(SecurityContextColors {
                 user: LayerColors {
                     background: colors[1],
@@ -1273,7 +1276,7 @@ impl<'t> SecurityContext<'t> {
     }
 }
 
-impl<'t> Drop for SecurityContext<'t> {
+impl<'context> Drop for SecurityContext<'context> {
     /// See: `freecon()`.
     #[doc(alias = "freecon")]
     fn drop(&mut self) {
@@ -1361,7 +1364,7 @@ impl SecurityContextList {
             }
         };
 
-        if r == -1 {
+        if r == -1_i32 {
             Err(Error::last_io_error(proc_name))
         } else {
             ptr::NonNull::new(context_list).map_or_else(
@@ -1543,7 +1546,9 @@ impl SecurityClass {
         access_vector: selinux_sys::access_vector_t,
     ) -> Result<CAllocatedBlock<c_char>> {
         let mut name_ptr: *mut c_char = ptr::null_mut();
-        if unsafe { selinux_sys::security_av_string(self.0, access_vector, &mut name_ptr) } == -1 {
+        let r: c_int =
+            unsafe { selinux_sys::security_av_string(self.0, access_vector, &mut name_ptr) };
+        if r == -1_i32 {
             Err(Error::last_io_error("security_av_string()"))
         } else {
             CAllocatedBlock::new(name_ptr).ok_or_else(|| {
@@ -1767,7 +1772,7 @@ impl OpaqueSecurityContext {
         proc_name: &'static str,
         new_value: &CStr,
     ) -> Result<()> {
-        if unsafe { proc(self.context.as_ptr(), new_value.as_ptr()) } == 0 {
+        if unsafe { proc(self.context.as_ptr(), new_value.as_ptr()) } == 0_i32 {
             Ok(())
         } else {
             Err(Error::last_io_error(proc_name))
@@ -1853,9 +1858,9 @@ pub enum ProtectionCheckingMode {
 #[doc(alias = "is_selinux_mls_enabled")]
 #[must_use]
 pub fn kernel_support() -> KernelSupport {
-    if unsafe { selinux_sys::is_selinux_mls_enabled() } != 0 {
+    if unsafe { selinux_sys::is_selinux_mls_enabled() } != 0_i32 {
         KernelSupport::SELinuxMLS
-    } else if unsafe { selinux_sys::is_selinux_enabled() } != 0 {
+    } else if unsafe { selinux_sys::is_selinux_enabled() } != 0_i32 {
         KernelSupport::SELinux
     } else {
         KernelSupport::Unsupported
@@ -1867,13 +1872,13 @@ pub fn kernel_support() -> KernelSupport {
 /// See: `selinux_getenforcemode()`.
 #[doc(alias = "selinux_getenforcemode")]
 pub fn boot_mode() -> Result<SELinuxMode> {
-    let mut enforce = -1;
-    if unsafe { selinux_sys::selinux_getenforcemode(&mut enforce) } == -1 {
+    let mut enforce: c_int = -1;
+    if unsafe { selinux_sys::selinux_getenforcemode(&mut enforce) } == -1_i32 {
         Err(Error::last_io_error("selinux_getenforcemode()"))
     } else {
         match enforce {
-            -1 => Ok(SELinuxMode::NotRunning),
-            0 => Ok(SELinuxMode::Permissive),
+            -1_i32 => Ok(SELinuxMode::NotRunning),
+            0_i32 => Ok(SELinuxMode::Permissive),
             _ => Ok(SELinuxMode::Enforcing),
         }
     }
@@ -1886,8 +1891,8 @@ pub fn boot_mode() -> Result<SELinuxMode> {
 #[must_use]
 pub fn current_mode() -> SELinuxMode {
     match unsafe { selinux_sys::security_getenforce() } {
-        -1 => SELinuxMode::NotRunning,
-        0 => SELinuxMode::Permissive,
+        -1_i32 => SELinuxMode::NotRunning,
+        0_i32 => SELinuxMode::Permissive,
         _ => SELinuxMode::Enforcing,
     }
 }
@@ -1925,21 +1930,22 @@ pub fn set_current_mode(new_mode: SELinuxMode) -> Result<()> {
 #[doc(alias = "security_reject_unknown")]
 #[doc(alias = "security_deny_unknown")]
 pub fn undefined_handling() -> Result<UndefinedHandling> {
-    let mut reject_unknown = unsafe { (OptionalNativeFunctions::get().security_reject_unknown)() };
-    if reject_unknown == -1 {
+    let mut reject_unknown: c_int =
+        unsafe { (OptionalNativeFunctions::get().security_reject_unknown)() };
+    if reject_unknown == -1_i32 {
         let err = io::Error::last_os_error();
         if err.raw_os_error() == Some(libc::ENOSYS) {
-            reject_unknown = 0;
+            reject_unknown = 0_i32;
         } else {
             return Err(Error::from_io("security_reject_unknown()", err));
         }
     }
 
-    if reject_unknown == 0 {
+    if reject_unknown == 0_i32 {
         match unsafe { selinux_sys::security_deny_unknown() } {
-            -1 => Err(Error::last_io_error("security_deny_unknown()")),
+            -1_i32 => Err(Error::last_io_error("security_deny_unknown()")),
 
-            0 => Ok(UndefinedHandling::Allowed),
+            0_i32 => Ok(UndefinedHandling::Allowed),
 
             _ => Ok(UndefinedHandling::DeniedAtRunTime),
         }
@@ -1955,24 +1961,24 @@ pub fn undefined_handling() -> Result<UndefinedHandling> {
 #[doc(alias = "security_get_checkreqprot")]
 pub fn protection_checking_mode() -> Result<ProtectionCheckingMode> {
     match unsafe { selinux_sys::security_get_checkreqprot() } {
-        -1 => Err(Error::last_io_error("security_get_checkreqprot()")),
+        -1_i32 => Err(Error::last_io_error("security_get_checkreqprot()")),
 
-        0 => Ok(ProtectionCheckingMode::CheckingActualProtection),
+        0_i32 => Ok(ProtectionCheckingMode::CheckingActualProtection),
 
         _ => Ok(ProtectionCheckingMode::CheckingRequestedProtection),
     }
 }
 
-fn dynamic_mapping_into_native_form<'m, 'k, 'o, K, V, O>(
-    mapping: &'m [(K, V)],
-    c_string_storage: &mut HashMap<&'k str, CString>,
+fn dynamic_mapping_into_native_form<'mapping, 'key, 'value, K, V, O>(
+    mapping: &'mapping [(K, V)],
+    c_string_storage: &mut HashMap<&'key str, CString>,
 ) -> Result<Vec<selinux_sys::security_class_mapping>>
 where
-    'm: 'k,
-    'o: 'k,
-    K: AsRef<str> + 'k,
+    'mapping: 'key,
+    'value: 'key,
+    K: AsRef<str> + 'key,
     V: AsRef<[O]>,
-    O: AsRef<str> + 'o,
+    O: AsRef<str> + 'value,
 {
     let mut c_map = Vec::with_capacity(mapping.len() + 1);
 
@@ -2044,7 +2050,7 @@ pub fn flush_class_cache() -> Result<()> {
 
     let err = io::Error::last_os_error();
     match err.raw_os_error() {
-        None | Some(0) => Ok(()),
+        None | Some(0_i32) => Ok(()),
         _ => Err(Error::from_io("selinux_flush_class_cache()", err)),
     }
 }
@@ -2069,7 +2075,7 @@ pub fn se_user_and_level(
     let mut level_ptr: *mut c_char = ptr::null_mut();
 
     let (r, proc_name) = if let Some(c_service) = c_service {
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::getseuser(
                 c_user_name.as_ptr(),
                 c_service.as_ptr(),
@@ -2087,7 +2093,7 @@ pub fn se_user_and_level(
         (r, "getseuserbyname()")
     };
 
-    if r == -1 {
+    if r == -1_i32 {
         Err(Error::last_io_error(proc_name))
     } else if se_user_ptr.is_null() || level_ptr.is_null() {
         Err(Error::from_io(proc_name, io::ErrorKind::InvalidData.into()))
@@ -2117,7 +2123,7 @@ pub fn reset_config() {
 pub fn default_type_for_role(role: &str) -> Result<CAllocatedBlock<c_char>> {
     let mut c_type: *mut c_char = ptr::null_mut();
     let c_role = str_to_c_string(role)?;
-    if unsafe { selinux_sys::get_default_type(c_role.as_ptr(), &mut c_type) } == -1 {
+    if unsafe { selinux_sys::get_default_type(c_role.as_ptr(), &mut c_type) } == -1_i32 {
         Err(Error::last_io_error("get_default_type()"))
     } else {
         CAllocatedBlock::new(c_type)

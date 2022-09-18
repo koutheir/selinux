@@ -3,7 +3,7 @@ mod tests;
 
 use std::ffi::CStr;
 use std::marker::PhantomData;
-use std::os::raw::c_uint;
+use std::os::raw::{c_int, c_uint};
 use std::path::Path;
 use std::{iter, ptr};
 
@@ -99,6 +99,9 @@ bitflags! {
         /// [`PROGRESS`]: Self::PROGRESS
         const MASS_RELABEL = selinux_sys::SELINUX_RESTORECON_MASS_RELABEL as c_uint;
 
+        // The rest of the constants were defined after version 2.8, so selinux_sys might not
+        // export them. We therefore define them manually.
+
         /// Do not check or update any extended attribute security.sehash entries.
         ///
         /// This flag is supported only by `libselinux` version `3.0` or later.
@@ -137,11 +140,11 @@ bitflags! {
 
 /// Restore file(s) default SELinux security contexts.
 #[derive(Debug, Default)]
-pub struct ContextRestore<'l, T: crate::label::back_end::BackEnd> {
-    labeler: Option<&'l mut Labeler<T>>,
+pub struct ContextRestore<'labeler, T: crate::label::back_end::BackEnd> {
+    labeler: Option<&'labeler mut Labeler<T>>,
 }
 
-impl<'l, T> ContextRestore<'l, T>
+impl<'labeler, T> ContextRestore<'labeler, T>
 where
     T: crate::label::back_end::BackEnd,
 {
@@ -149,7 +152,7 @@ where
     ///
     /// See: `selinux_restorecon_set_sehandle()`.
     #[doc(alias = "selinux_restorecon_set_sehandle")]
-    pub fn with_labeler(labeler: &'l mut Labeler<T>) -> Self {
+    pub fn with_labeler(labeler: &'labeler mut Labeler<T>) -> Self {
         Self {
             labeler: Some(labeler),
         }
@@ -157,7 +160,7 @@ where
 
     /// Get the labeling handle to be used for relabeling.
     #[must_use]
-    pub fn labeler(&self) -> Option<&&'l mut Labeler<T>> {
+    pub fn labeler(&self) -> Option<&&'labeler mut Labeler<T>> {
         self.labeler.as_ref()
     }
 
@@ -229,7 +232,7 @@ where
     ) -> Result<DirectoryXAttributesIter> {
         let mut xattr_list_ptr: *mut *mut selinux_sys::dir_xattr = ptr::null_mut();
         let c_dir_path = os_str_to_c_string(dir_path.as_ref().as_os_str())?;
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::selinux_restorecon_xattr(
                 c_dir_path.as_ptr(),
                 flags.bits(),
@@ -237,7 +240,7 @@ where
             )
         };
 
-        if r == -1 {
+        if r == -1_i32 {
             Err(Error::last_io_error("selinux_restorecon_xattr()"))
         } else {
             let xattr_list = ptr::NonNull::new(xattr_list_ptr).map_or(

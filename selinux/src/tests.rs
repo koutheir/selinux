@@ -827,6 +827,6 @@ fn default_type_for_role() {
 
 #[test]
 fn set_dynamic_mapping() {
-    let _type = super::set_dynamic_mapping(&[] as &[(&str, &[&str])]).unwrap();
-    let _type = super::set_dynamic_mapping(&[("file", &["read", "write"] as &[&str])]).unwrap();
+    super::set_dynamic_mapping(&[] as &[(&str, &[&str])]).unwrap();
+    super::set_dynamic_mapping(&[("file", &["read", "write"] as &[&str])]).unwrap();
 }

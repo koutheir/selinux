@@ -59,17 +59,17 @@ unsafe extern "C" fn audit_call_back(
     _message_buffer: *mut c_char,
     _message_buffer_size: usize,
 ) -> c_int {
-    0
+    0_i32
 }
 
 unsafe extern "C" fn context_validation_call_back(_context_ptr: *mut *mut c_char) -> c_int {
-    0
+    0_i32
 }
 
 unsafe extern "C" fn enforcing_change_call_back(_enforcing: c_int) -> c_int {
-    0
+    0_i32
 }
 
 unsafe extern "C" fn security_policy_reload_call_back(_seqno: c_int) -> c_int {
-    0
+    0_i32
 }

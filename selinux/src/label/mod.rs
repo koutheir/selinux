@@ -104,7 +104,7 @@ impl<T: BackEnd> Labeler<T> {
         let mut digest_size = 0;
         let mut spec_files_ptr: *mut *mut c_char = ptr::null_mut();
         let mut num_spec_files = 0;
-        let r = unsafe {
+        let r: c_int = unsafe {
             selinux_sys::selabel_digest(
                 self.pointer.as_ptr(),
                 &mut digest_ptr,
@@ -114,7 +114,7 @@ impl<T: BackEnd> Labeler<T> {
             )
         };
 
-        if r == -1 {
+        if r == -1_i32 {
             Err(Error::last_io_error("selabel_digest()"))
         } else {
             Ok(Digest::new(
@@ -297,7 +297,7 @@ impl Labeler<back_end::File> {
         } else {
             let err = io::Error::last_os_error();
             match err.raw_os_error() {
-                None | Some(0) => PartialMatchesResult::NoMatchOrMissing,
+                None | Some(0_i32) => PartialMatchesResult::NoMatchOrMissing,
 
                 _ => {
                     let proc_name = "selabel_get_digests_all_partial_matches()";
@@ -319,12 +319,12 @@ impl Labeler<back_end::File> {
 ///
 /// ⚠️ This instance does **NOT** own the `digest` or the `spec_files`.
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Digest<'l> {
-    digest: &'l [u8],
-    spec_files: Vec<&'l Path>,
+pub struct Digest<'list> {
+    digest: &'list [u8],
+    spec_files: Vec<&'list Path>,
 }
 
-impl<'l> Digest<'l> {
+impl<'list> Digest<'list> {
     fn new(
         digest: *const u8,
         digest_size: usize,
@@ -358,7 +358,7 @@ impl<'l> Digest<'l> {
 
     /// List of files used.
     #[must_use]
-    pub fn spec_files(&self) -> &[&'l Path] {
+    pub fn spec_files(&self) -> &[&'list Path] {
         &self.spec_files
     }
 }

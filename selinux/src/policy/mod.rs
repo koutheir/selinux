@@ -33,7 +33,7 @@ pub fn make_and_load() -> Result<()> {
 #[doc(alias = "selinux_init_load_policy")]
 pub fn load_initial() -> Result<c_int> {
     let mut enforce: c_int = 0;
-    if unsafe { selinux_sys::selinux_init_load_policy(&mut enforce) } == -1 {
+    if unsafe { selinux_sys::selinux_init_load_policy(&mut enforce) } == -1_i32 {
         Err(Error::last_io_error("selinux_init_load_policy()"))
     } else {
         Ok(enforce)
@@ -46,7 +46,7 @@ pub fn load_initial() -> Result<c_int> {
 #[doc(alias = "selinux_getpolicytype")]
 pub fn policy_type() -> Result<CAllocatedBlock<c_char>> {
     let mut name_ptr: *mut c_char = ptr::null_mut();
-    if unsafe { selinux_sys::selinux_getpolicytype(&mut name_ptr) } == -1 {
+    if unsafe { selinux_sys::selinux_getpolicytype(&mut name_ptr) } == -1_i32 {
         Err(Error::last_io_error("selinux_getpolicytype()"))
     } else {
         CAllocatedBlock::new(name_ptr).ok_or_else(|| {
@@ -60,8 +60,8 @@ pub fn policy_type() -> Result<CAllocatedBlock<c_char>> {
 /// See: `security_policyvers()`.
 #[doc(alias = "security_policyvers")]
 pub fn version_number() -> Result<c_uint> {
-    let r = unsafe { selinux_sys::security_policyvers() };
-    if r == -1 {
+    let r: c_int = unsafe { selinux_sys::security_policyvers() };
+    if r == -1_i32 {
         Err(Error::last_io_error("security_policyvers()"))
     } else {
         Ok(r as c_uint)
