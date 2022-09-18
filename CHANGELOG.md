@@ -2,6 +2,20 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2022-09-18
+
+### Changed
+
+- The prototype of `ContextRestore::restore_context_of_file_system_entry()` changed, in order to
+  add support for the new features introduced by `libselinux` version `3.4`.
+
+  > ⚠️ **This is a breaking change**.
+
+  Calling the new prototype with `threads_count` set to `1` reproduces the old behavior.
+
+- Switched to Rust's 2021 edition.
+- Updated dependencies: `simplelog`, `once_cell`, `serial_test`, `socketpair`.
+
 ## [0.2.7] - 2022-04-09
 
 ### Changed
@@ -33,7 +47,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Replace each `doc(alias(..))` directive by `doc(alias = ...)` directive.
   This enhances compatibility with older versions of Rust.
 
-  Thank you [*ratmice*](https://github.com/ratmice).
+  Thank you, [*Matt Rice*](https://github.com/ratmice).
+
 - Updated dependencies: `socketpair`.
 
 ## [0.2.3] - 2021-08-22
@@ -76,7 +91,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - `set_role()` to `set_role_str()`.
   - `set_user()` to `set_user_str()`.
 
-  **This is a breaking change.**
+  > ⚠️ **This is a breaking change**.
 
 ## [0.1.3] - 2021-08-02
 

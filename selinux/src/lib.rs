@@ -1,6 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc(html_root_url = "https://docs.rs/selinux/0.2.7")]
-#![allow(clippy::upper_case_acronyms)]
+#![doc(html_root_url = "https://docs.rs/selinux/0.3.0")]
 
 /*!
 # 🛡️ Safe Rust bindings for `libselinux`
