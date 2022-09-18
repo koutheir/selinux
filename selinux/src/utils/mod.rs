@@ -3,7 +3,7 @@ mod tests;
 
 use std::ffi::{CStr, CString, OsStr};
 use std::marker::PhantomData;
-use std::os::raw::{c_char, c_int, c_void};
+use std::os::raw::{c_char, c_int, c_uint, c_ulong, c_void};
 use std::path::{Path, PathBuf};
 use std::{io, mem, ptr};
 
@@ -173,6 +173,16 @@ pub(crate) struct OptionalNativeFunctions {
 
     /// Since version 3.1
     pub(crate) selinux_flush_class_cache: unsafe extern "C" fn(),
+
+    /// Since version 3.4
+    pub(crate) selinux_restorecon_parallel: unsafe extern "C" fn(
+        pathname: *const c_char,
+        restorecon_flags: c_uint,
+        nthreads: usize,
+    ) -> c_int,
+
+    /// Since version 3.4
+    pub(crate) selinux_restorecon_get_skipped_errors: unsafe extern "C" fn() -> c_ulong,
 }
 
 /// Addresses of optionally-implemented functions by libselinux.
@@ -188,6 +198,9 @@ impl Default for OptionalNativeFunctions {
             security_validatetrans: Self::not_impl_security_validatetrans,
             security_validatetrans_raw: Self::not_impl_security_validatetrans,
             selinux_flush_class_cache: Self::not_impl_selinux_flush_class_cache,
+            selinux_restorecon_parallel: Self::not_impl_selinux_restorecon_parallel,
+            selinux_restorecon_get_skipped_errors:
+                Self::not_impl_selinux_restorecon_get_skipped_errors,
         }
     }
 }
@@ -259,6 +272,17 @@ impl OptionalNativeFunctions {
         if !f.is_null() {
             self.selinux_flush_class_cache = unsafe { mem::transmute(f) };
         }
+
+        let f = unsafe { libc::dlsym(lib_handle, "selinux_restorecon_parallel\0".as_ptr().cast()) };
+        if !f.is_null() {
+            self.selinux_restorecon_parallel = unsafe { mem::transmute(f) };
+        }
+
+        let c_name = "selinux_restorecon_get_skipped_errors\0";
+        let f = unsafe { libc::dlsym(lib_handle, c_name.as_ptr().cast()) };
+        if !f.is_null() {
+            self.selinux_restorecon_get_skipped_errors = unsafe { mem::transmute(f) };
+        }
     }
 
     unsafe extern "C" fn not_impl_security_reject_unknown() -> c_int {
@@ -298,6 +322,19 @@ impl OptionalNativeFunctions {
 
     unsafe extern "C" fn not_impl_selinux_flush_class_cache() {
         Error::set_errno(libc::ENOSYS);
+    }
+
+    unsafe extern "C" fn not_impl_selinux_restorecon_parallel(
+        _pathname: *const c_char,
+        _restorecon_flags: c_uint,
+        _nthreads: usize,
+    ) -> c_int {
+        Error::set_errno(libc::ENOSYS);
+        -1_i32
+    }
+
+    unsafe extern "C" fn not_impl_selinux_restorecon_get_skipped_errors() -> c_ulong {
+        0
     }
 }
 

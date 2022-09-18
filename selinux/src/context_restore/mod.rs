@@ -5,7 +5,7 @@ use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::os::raw::{c_int, c_uint};
 use std::path::Path;
-use std::{iter, ptr};
+use std::{io, iter, ptr};
 
 use crate::errors::{Error, Result};
 use crate::label::Labeler;
@@ -112,6 +112,11 @@ bitflags! {
         ///
         /// This flag is supported only by `libselinux` version `3.1` or later.
         const CONFLICT_ERROR = 0x10000;
+
+        /// Count, but otherwise ignore, errors during the file tree walk.
+        ///
+        /// This flag is supported only by `libselinux` version `3.4` or later.
+        const COUNT_ERRORS = 0x20000;
     }
 }
 
@@ -205,20 +210,76 @@ where
 
     /// Restore file(s) default SELinux security contexts.
     ///
-    /// See: `selinux_restorecon()`.
+    /// If `threads_count` is zero, then:
+    /// - If `selinux_restorecon_parallel()` is supported by `libselinux`, then this operation will
+    ///   use as many threads as the number of online processor cores present.
+    /// - Otherwise, this operation will run in one thread.
+    ///
+    /// When this method succeeds:
+    /// - If `flags` includes [`RestoreFlags::COUNT_ERRORS`], then this returns `Ok(Some(N))`
+    ///   where `N` is the number of errors that were ignored while walking the file system tree
+    ///   specified by `path`.
+    /// - Otherwise, `Ok(None)` is returned.
+    ///
+    /// See: `selinux_restorecon()`, `selinux_restorecon_parallel()`.
     #[doc(alias = "selinux_restorecon")]
+    #[doc(alias = "selinux_restorecon_parallel")]
     pub fn restore_context_of_file_system_entry(
         self,
         path: impl AsRef<Path>,
+        threads_count: usize,
         flags: RestoreFlags,
-    ) -> Result<()> {
+    ) -> Result<Option<u64>> {
         if let Some(labeler) = self.labeler.map(Labeler::as_mut_ptr) {
             unsafe { selinux_sys::selinux_restorecon_set_sehandle(labeler) };
         }
 
         let c_path = os_str_to_c_string(path.as_ref().as_os_str())?;
-        let r = unsafe { selinux_sys::selinux_restorecon(c_path.as_ptr(), flags.bits()) };
-        ret_val_to_result("selinux_restorecon()", r)
+        match threads_count {
+            0 => {
+                // Call `selinux_restorecon_parallel()` if possible.
+                Error::clear_errno();
+                let r = unsafe {
+                    (OptionalNativeFunctions::get().selinux_restorecon_parallel)(
+                        c_path.as_ptr(),
+                        flags.bits(),
+                        threads_count,
+                    )
+                };
+
+                if r == -1_i32 {
+                    if io::Error::last_os_error().raw_os_error() != Some(libc::ENOSYS) {
+                        return Err(Error::last_io_error("selinux_restorecon_parallel()"));
+                    }
+
+                    // `selinux_restorecon_parallel()` is unsupported.
+                    // Call `selinux_restorecon()` instead.
+                    let r =
+                        unsafe { selinux_sys::selinux_restorecon(c_path.as_ptr(), flags.bits()) };
+                    ret_val_to_result("selinux_restorecon()", r)?;
+                }
+            }
+
+            1 => {
+                let r = unsafe { selinux_sys::selinux_restorecon(c_path.as_ptr(), flags.bits()) };
+                ret_val_to_result("selinux_restorecon()", r)?;
+            }
+
+            _ => {
+                let r = unsafe {
+                    (OptionalNativeFunctions::get().selinux_restorecon_parallel)(
+                        c_path.as_ptr(),
+                        flags.bits(),
+                        threads_count,
+                    )
+                };
+                ret_val_to_result("selinux_restorecon_parallel()", r)?;
+            }
+        }
+
+        Ok(flags.contains(RestoreFlags::COUNT_ERRORS).then(|| unsafe {
+            (OptionalNativeFunctions::get().selinux_restorecon_get_skipped_errors)()
+        }))
     }
 
     /// Manage default `security.sehash` extended attribute entries added by

@@ -6,7 +6,7 @@
 
 SELinux is a flexible Mandatory Access Control for Linux.
 
-This crate supports `libselinux` from version `2.8` to `3.2`.
+This crate supports `libselinux` from version `2.8` to `3.4`.
 Later versions might still be compatible.
 This crate exposes neither *deprecated* nor *undocumented* SELinux API functions
 and types.
