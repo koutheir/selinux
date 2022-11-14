@@ -1,5 +1,5 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
-#![doc = include_str!("../../README.md")]
+#![doc = include_str!("../README.md")]
 #![doc(html_root_url = "https://docs.rs/selinux/0.3.0")]
 #![allow(clippy::upper_case_acronyms)]
 #![warn(
