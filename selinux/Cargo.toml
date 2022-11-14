@@ -3,7 +3,7 @@
 [package]
 name          = "selinux"
 description   = "Flexible Mandatory Access Control for Linux"
-version       = "0.3.0"                                                          # Update version in `html_root_url`.
+version       = "0.3.1"                                                          # Update version in `html_root_url`.
 authors       = ["Koutheir Attouchi <koutheir@gmail.com>"]
 edition       = "2021"
 readme        = "../README.md"
@@ -15,14 +15,14 @@ documentation = "https://docs.rs/selinux"
 
 [dependencies]
 thiserror                   = { version = "1.0" }
-selinux-sys                 = { version = "0.5" }
+selinux-sys                 = { version = "0.6" }
 libc                        = { version = "0.2" }
 bitflags                    = { version = "1.3" }
-once_cell                   = { version = "1.14" }
+once_cell                   = { version = "1.16" }
 reference-counted-singleton = { version = "0.1" }
 
 [dev-dependencies]
 assert_matches = { version = "1.5" }
 tempfile       = { version = "3.3" }
 serial_test    = { version = "0.9" }
-socketpair     = { version = "0.16" }
+socketpair     = { version = "0.17" }

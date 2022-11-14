@@ -115,12 +115,12 @@ fn build_coverage_binaries(
     info!("Building coverage binaries...");
 
     let mut cmd = process::Command::new("cargo");
-    cmd.current_dir(&config.workspace_dir)
+    cmd.current_dir(config.workspace_dir)
         .stdout(process::Stdio::piped())
         .envs(common_env.iter().map(|(k, v)| (k, v)))
         .env("LLVM_PROFILE_FILE", "/dev/null")
         .args(common_args)
-        .args(&["--no-run", "--message-format=json"]);
+        .args(["--no-run", "--message-format=json"]);
 
     debug!("Running: {:?}", cmd);
     let output = cmd
@@ -143,7 +143,7 @@ fn run_coverage_binaries(
     info!("Running coverage binaries...");
 
     let mut cmd = process::Command::new("cargo");
-    cmd.current_dir(&config.workspace_dir)
+    cmd.current_dir(config.workspace_dir)
         .envs(common_env.iter().map(|(k, v)| (k, v)))
         .env("LLVM_PROFILE_FILE", &config.coverage_dir.join("%m.profraw"))
         .args(common_args);
@@ -156,7 +156,7 @@ fn merge_coverage_profraw_files(config: &Config, llvm_profdata: &Path) -> Result
     let profraw_files = list_files(&config.coverage_dir, "profraw")?;
 
     let mut cmd = process::Command::new(llvm_profdata);
-    cmd.args(&["merge", "--sparse", "--output"])
+    cmd.args(["merge", "--sparse", "--output"])
         .arg(&config.coverage_profdata)
         .args(&profraw_files);
     run_cmd(cmd, "llvm-profdata")
@@ -176,7 +176,7 @@ fn export_coverage_lcov(
 
     let mut cmd = process::Command::new(llvm_cov);
     cmd.stdout(lcov_info)
-        .args(&["export", "--format", "lcov"])
+        .args(["export", "--format", "lcov"])
         .args(llvm_cov_common_args)
         .arg("--instr-profile")
         .arg(&config.coverage_profdata);
@@ -195,8 +195,8 @@ fn export_coverage_html(
     info!("Exporting coverage HTML...");
 
     let mut cmd = process::Command::new(llvm_cov);
-    cmd.args(&["show", "--format", "html"])
-        .args(&["--show-line-counts-or-regions", "--show-instantiations"])
+    cmd.args(["show", "--format", "html"])
+        .args(["--show-line-counts-or-regions", "--show-instantiations"])
         .args(llvm_cov_common_args)
         .arg("--instr-profile")
         .arg(&config.coverage_profdata)
@@ -218,9 +218,9 @@ fn rustc_print_sysroot(config: &Config) -> Result<Vec<u8>> {
     let name = "rustc --print sysroot";
 
     let mut cmd = process::Command::new("rustc");
-    cmd.current_dir(&config.workspace_dir)
+    cmd.current_dir(config.workspace_dir)
         .stdout(process::Stdio::piped())
-        .args(&["--print", "sysroot"]);
+        .args(["--print", "sysroot"]);
 
     debug!("Running: {:?}", cmd);
     let output = cmd

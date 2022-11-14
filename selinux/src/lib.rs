@@ -629,7 +629,7 @@ impl<'context> SecurityContext<'context> {
             }
         } else {
             Ok(ptr::NonNull::new(context).map(|context| {
-                let size = (r >= 0_i32).then(|| r as c_uint);
+                let size = (r >= 0_i32).then_some(r as c_uint);
                 Self::from_ptr(context, size, raw_format)
             }))
         }
@@ -694,7 +694,7 @@ impl<'context> SecurityContext<'context> {
             }
         } else {
             Ok(ptr::NonNull::new(context).map(|context| {
-                let size = (r >= 0_i32).then(|| r as c_uint);
+                let size = (r >= 0_i32).then_some(r as c_uint);
                 Self::from_ptr(context, size, raw_format)
             }))
         }
