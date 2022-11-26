@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2022-11-26
+
+### Changed
+
+- Return value of `selinux_restorecon_get_skipped_errors()` on 32-bits architectures requires
+  lossless casting to `u64`.
+
+  Thank you, [*plugwash*](https://github.com/plugwash).
+
 ## [0.3.1] - 2022-11-14
 
 ### Changed
