@@ -278,7 +278,7 @@ where
         }
 
         Ok(flags.contains(RestoreFlags::COUNT_ERRORS).then(|| unsafe {
-            (OptionalNativeFunctions::get().selinux_restorecon_get_skipped_errors)()
+            u64::from((OptionalNativeFunctions::get().selinux_restorecon_get_skipped_errors)())
         }))
     }
 
