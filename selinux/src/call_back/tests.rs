@@ -37,8 +37,7 @@ fn log() {
     // calls libc::abort(), and call that instead.
     // For the moment, we allow calling abort() with a different prototype,
     // which only "works" in some ABIs, and probably fails horribly in others.
-    let abort_ptr = libc::abort as *const unsafe fn() -> !;
-    template::<super::Log>(unsafe { mem::transmute(abort_ptr) });
+    template::<super::Log>(unsafe { mem::transmute(libc::abort as unsafe extern "C" fn() -> !) });
 }
 
 #[test]
