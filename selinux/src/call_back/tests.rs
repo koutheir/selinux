@@ -1,5 +1,6 @@
 #![cfg(all(test, target_os = "linux", not(target_env = "kernel")))]
 
+use core::mem;
 use std::fmt;
 use std::os::raw::{c_char, c_int, c_void};
 
@@ -8,6 +9,8 @@ where
     T: super::CallBack + Default + fmt::Debug,
     <T as super::CallBack>::CallBackType: fmt::Debug + Eq + Copy + Sized,
 {
+    // TODO: We need to arrange for the call back to be actually called.
+
     let _ignored = format!("{:?}", T::default());
 
     let old_call_back = T::get_call_back();
@@ -27,8 +30,15 @@ where
 
 #[test]
 fn log() {
+    // # Safety
+    //
     // For now, stable Rust does not allow defining variadic functions.
-    template::<super::Log>(unsafe { *(libc::abort as *const _) });
+    // Once that becomes possible, we should define a variadic function that
+    // calls libc::abort(), and call that instead.
+    // For the moment, we allow calling abort() with a different prototype,
+    // which only "works" in some ABIs, and probably fails horribly in others.
+    let abort_ptr = libc::abort as *const unsafe fn() -> !;
+    template::<super::Log>(unsafe { mem::transmute(abort_ptr) });
 }
 
 #[test]
