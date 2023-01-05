@@ -2,6 +2,20 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2023-01-05
+
+### Changed
+
+- `selinux::call_back::tests::log()` performed wrong manipulation of function pointers.
+  The situation now is a little better for some ABIs, but this will have to be fixed for good once
+  Rust allows defining variadic functions.
+  This was a bug in unit tests, not in the crate implementation.
+
+  Thank you, [*Ralf Jung*](https://github.com/RalfJung).
+
+- Updated dependencies: `once_cell`, `serial_test`, `socketpair`.
+- Updated copyright years.
+
 ## [0.3.2] - 2022-11-26
 
 ### Changed
