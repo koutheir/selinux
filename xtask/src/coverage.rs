@@ -79,7 +79,7 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
     info!("Cleaning up old coverage files...");
     let profraw_files = list_files(&config.coverage_dir, "profraw")?;
     profraw_files.into_iter().for_each(|p| {
-        let _ignored = fs::remove_file(&p);
+        let _ignored = fs::remove_file(p);
     });
 
     let tests_paths = build_coverage_binaries(config, &coverage_common_env, &coverage_common_args)?;

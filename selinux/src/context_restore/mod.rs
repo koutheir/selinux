@@ -277,8 +277,11 @@ where
             }
         }
 
-        Ok(flags.contains(RestoreFlags::COUNT_ERRORS).then(|| unsafe {
-            u64::from((OptionalNativeFunctions::get().selinux_restorecon_get_skipped_errors)())
+        Ok(flags.contains(RestoreFlags::COUNT_ERRORS).then(|| {
+            #[allow(clippy::useless_conversion)]
+            u64::from(unsafe {
+                (OptionalNativeFunctions::get().selinux_restorecon_get_skipped_errors)()
+            })
         }))
     }
 
