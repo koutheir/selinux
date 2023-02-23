@@ -3,7 +3,7 @@
 [package]
 name          = "selinux"
 description   = "Flexible Mandatory Access Control for Linux"
-version       = "0.3.3"                                                          # Update version in `html_root_url`.
+version       = "0.4.0"                                                          # Update version in `html_root_url`.
 authors       = ["Koutheir Attouchi <koutheir@gmail.com>"]
 edition       = "2021"
 readme        = "../README.md"
@@ -24,5 +24,5 @@ reference-counted-singleton = { version = "0.1" }
 [dev-dependencies]
 assert_matches = { version = "1.5" }
 tempfile       = { version = "3.3" }
-serial_test    = { version = "0.10" }
+serial_test    = { version = "1.0" }
 socketpair     = { version = "0.18" }

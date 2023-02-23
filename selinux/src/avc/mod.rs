@@ -38,7 +38,7 @@ impl AccessVectorCache {
     ///
     /// The `options` parameter produces zero or more `(type, value)` tuples, where:
     /// - `type` is one of `selinux_sys::AVC_OPT_*` values,
-    ///    e.g., [`selinux_sys::AVC_OPT_SETENFORCE`].
+    ///    *e.g.*, [`selinux_sys::AVC_OPT_SETENFORCE`].
     /// - `value` is a pointer whose semantics are specific to `type`.
     ///
     /// Attempting to initialize the access vector cache while it is still

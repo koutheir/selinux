@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use std::os::raw::{c_char, c_int, c_uint};
+use std::os::raw::{c_char, c_int, c_uint, c_void};
 use std::path::Path;
 use std::{io, ptr};
 
@@ -12,9 +12,13 @@ use crate::utils::*;
 ///
 /// See: `security_load_policy()`.
 #[doc(alias = "security_load_policy")]
-pub fn load(policy_bytes: &mut [u8]) -> Result<()> {
-    let data = policy_bytes.as_mut_ptr().cast();
-    let r = unsafe { selinux_sys::security_load_policy(data, policy_bytes.len()) };
+pub fn load(policy_bytes: &[u8]) -> Result<()> {
+    // security_load_policy() declares "data" as a constant pointer starting from libselinux
+    // version 3.5.
+    // Previous supported versions have the same security_load_policy() implementation, but declare
+    // "data" as a mutable pointer, even though it is never modified.
+    let data = policy_bytes.as_ptr() as *mut c_void;
+    let r = unsafe { selinux_sys::security_load_policy(data.cast(), policy_bytes.len()) };
     ret_val_to_result("security_load_policy()", r)
 }
 

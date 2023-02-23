@@ -38,7 +38,7 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
         "--ignore-filename-regex",
         r#"/tests.rs$$"#,
         "--ignore-filename-regex",
-        &format!("^{}/", coverage_dir),
+        &format!("^{coverage_dir}/"),
     ];
 
     let rustc_flags = OsStr::new("-Cinstrument-coverage -Clink-dead-code");

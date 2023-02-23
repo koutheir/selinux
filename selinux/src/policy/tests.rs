@@ -44,8 +44,8 @@ fn binary_policy_path() {
 
 #[test]
 fn load() {
-    let mut policy_bytes = [];
-    super::load(&mut policy_bytes).unwrap_err();
+    let policy_bytes = [];
+    super::load(&policy_bytes).unwrap_err();
 }
 
 #[test]

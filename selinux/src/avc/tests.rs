@@ -21,7 +21,7 @@ fn security_id_default() {
 fn access_vector_cache_initialize() {
     match super::AccessVectorCache::initialize(&[]) {
         Ok(avc) => {
-            let _ignored = format!("{:?}", avc);
+            let _ignored = format!("{avc:?}");
         }
 
         Err(err) => {
@@ -36,7 +36,7 @@ fn access_vector_cache_initialize() {
 
     match super::AccessVectorCache::initialize(options) {
         Ok(avc) => {
-            let _ignored = format!("{:?}", avc);
+            let _ignored = format!("{avc:?}");
         }
 
         Err(err) => {

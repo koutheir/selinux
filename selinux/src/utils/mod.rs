@@ -183,6 +183,14 @@ pub(crate) struct OptionalNativeFunctions {
 
     /// Since version 3.4
     pub(crate) selinux_restorecon_get_skipped_errors: unsafe extern "C" fn() -> c_ulong,
+
+    /// Since version 3.5
+    pub(crate) getpidprevcon:
+        unsafe extern "C" fn(pid: selinux_sys::pid_t, con: *mut *mut c_char) -> c_int,
+
+    /// Since version 3.5
+    pub(crate) getpidprevcon_raw:
+        unsafe extern "C" fn(pid: selinux_sys::pid_t, con: *mut *mut c_char) -> c_int,
 }
 
 /// Addresses of optionally-implemented functions by libselinux.
@@ -201,6 +209,8 @@ impl Default for OptionalNativeFunctions {
             selinux_restorecon_parallel: Self::not_impl_selinux_restorecon_parallel,
             selinux_restorecon_get_skipped_errors:
                 Self::not_impl_selinux_restorecon_get_skipped_errors,
+            getpidprevcon: Self::not_impl_getpidprevcon,
+            getpidprevcon_raw: Self::not_impl_getpidprevcon,
         }
     }
 }
@@ -283,6 +293,16 @@ impl OptionalNativeFunctions {
         if !f.is_null() {
             self.selinux_restorecon_get_skipped_errors = unsafe { mem::transmute(f) };
         }
+
+        let f = unsafe { libc::dlsym(lib_handle, "getpidprevcon\0".as_ptr().cast()) };
+        if !f.is_null() {
+            self.getpidprevcon = unsafe { mem::transmute(f) };
+        }
+
+        let f = unsafe { libc::dlsym(lib_handle, "getpidprevcon_raw\0".as_ptr().cast()) };
+        if !f.is_null() {
+            self.getpidprevcon_raw = unsafe { mem::transmute(f) };
+        }
     }
 
     unsafe extern "C" fn not_impl_security_reject_unknown() -> c_int {
@@ -335,5 +355,13 @@ impl OptionalNativeFunctions {
 
     unsafe extern "C" fn not_impl_selinux_restorecon_get_skipped_errors() -> c_ulong {
         0
+    }
+
+    unsafe extern "C" fn not_impl_getpidprevcon(
+        _pid: selinux_sys::pid_t,
+        _con: *mut *mut c_char,
+    ) -> c_int {
+        Error::set_errno(libc::ENOSYS);
+        -1_i32
     }
 }

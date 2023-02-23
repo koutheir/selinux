@@ -6,7 +6,7 @@
 
 SELinux is a flexible Mandatory Access Control for Linux.
 
-This crate supports `libselinux` from version `2.8` to `3.4`.
+This crate supports `libselinux` from version `2.8` to `3.5`.
 Later versions might still be compatible.
 This crate exposes neither *deprecated* nor *undocumented* SELinux API functions
 and types.
@@ -51,7 +51,7 @@ in this section, then please create an issue or a pull request to fix that.
 ### Build system
 
 This crate uses only `cargo` as a build system. Usual commands are used to
-perform most operations, e.g., `build`, `test`, `fmt`.
+perform most operations, *e.g.*, `build`, `test`, `fmt`.
 
 > Code is read many time more that written, so this crate's code is always
 > formatted using `cargo fmt`.
@@ -78,7 +78,7 @@ supported and enabled at multiple levels:
 - The file system must be correctly configured.
 - The user space must have access to SELinux, usually via `libselinux`.
 
-[Red Hat Enterprise Linux]-like distributions (e.g., [Fedora], [CentOS],
+[Red Hat Enterprise Linux]-like distributions (*e.g.*, [Fedora], [CentOS],
 [RockyLinux]) are suitable for testing this crate, either on hardware or inside
 virtual machines, but not in containers.
 

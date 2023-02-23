@@ -685,7 +685,7 @@ fn opaque_security_context() {
 #[test]
 fn kernel_support() {
     let r = super::kernel_support();
-    let _ignored = format!("{:?}", r);
+    let _ignored = format!("{r:?}");
 }
 
 #[test]
@@ -703,7 +703,7 @@ fn boot_mode() {
 #[test]
 fn current_mode() {
     let r = super::current_mode();
-    let _ignored = format!("{:?}", r);
+    let _ignored = format!("{r:?}");
 }
 
 #[test]

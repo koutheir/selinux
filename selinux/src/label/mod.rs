@@ -270,6 +270,8 @@ impl Labeler<back_end::File> {
     /// Retrieve the partial matches digest and the xattr digest that applies
     /// to the supplied path.
     ///
+    /// This function requires `libselinux` version `3.0` or later.
+    ///
     /// See: `selabel_get_digests_all_partial_matches()`.
     #[doc(alias = "selabel_get_digests_all_partial_matches")]
     pub fn get_digests_all_partial_matches_by_path(

@@ -1,6 +1,6 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
 #![doc = include_str!("../README.md")]
-#![doc(html_root_url = "https://docs.rs/selinux/0.3.3")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.4.0")]
 #![allow(clippy::upper_case_acronyms)]
 #![warn(
     missing_docs,
@@ -247,15 +247,42 @@ impl<'context> SecurityContext<'context> {
     /// See: `getprevcon()`.
     #[doc(alias = "getprevcon")]
     pub fn previous(raw_format: bool) -> Result<Self> {
-        let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
-            (selinux_sys::getprevcon_raw, "getprevcon_raw()")
-        } else {
-            (selinux_sys::getprevcon, "getprevcon()")
-        };
+        Self::previous_of_process(None, raw_format)
+    }
 
+    /// Return the security context, of the current or specified process, before the last exec.
+    ///
+    /// If `process_id` is `None`, then the current process is queried.
+    ///
+    /// Specifying a particular process id (`process_id.is_some()`) requires `libselinux` version
+    /// `3.5` or later.
+    ///
+    /// See: `getprevcon()`, `getpidprevcon()`.
+    #[doc(alias = "getprevcon")]
+    #[doc(alias = "getpidprevcon")]
+    pub fn previous_of_process(process_id: Option<pid_t>, raw_format: bool) -> Result<Self> {
         let mut context: *mut c_char = ptr::null_mut();
-        let r = unsafe { proc(&mut context) };
-        Self::from_result(proc_name, r, context, raw_format)
+
+        if let Some(process_id) = process_id {
+            let onf = OptionalNativeFunctions::get();
+            let (proc, proc_name): (unsafe extern "C" fn(_, _) -> _, _) = if raw_format {
+                (onf.getpidprevcon_raw, "getpidprevcon_raw()")
+            } else {
+                (onf.getpidprevcon, "getpidprevcon()")
+            };
+
+            let r = unsafe { proc(process_id, &mut context) };
+            Self::from_result_with_pid(proc_name, r, context, process_id, raw_format)
+        } else {
+            let (proc, proc_name): (unsafe extern "C" fn(_) -> _, _) = if raw_format {
+                (selinux_sys::getprevcon_raw, "getprevcon_raw()")
+            } else {
+                (selinux_sys::getprevcon, "getprevcon()")
+            };
+
+            let r = unsafe { proc(&mut context) };
+            Self::from_result(proc_name, r, context, raw_format)
+        }
     }
 
     /// Set the current security context of the process to this context.
@@ -892,6 +919,8 @@ impl<'context> SecurityContext<'context> {
     ///
     /// This checks against the `mlsvalidatetrans` and `validatetrans`
     /// constraints in the loaded policy.
+    ///
+    /// This function requires `libselinux` version `3.0` or later.
     ///
     /// See: `security_validatetrans()`.
     #[doc(alias = "security_validatetrans")]
@@ -1753,7 +1782,7 @@ impl fmt::Display for OpaqueSecurityContext {
         } else {
             unsafe { CStr::from_ptr(ptr) }.to_string_lossy()
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -1993,7 +2022,9 @@ where
     ret_val_to_result("selinux_set_mapping()", r)
 }
 
-/// Flush the SELinux class cache, e.g., upon a policy reload.
+/// Flush the SELinux class cache, *e.g.*, upon a policy reload.
+///
+/// This function requires `libselinux` version `3.1` or later.
 ///
 /// See: `selinux_flush_class_cache()`.
 #[doc(alias = "selinux_flush_class_cache")]

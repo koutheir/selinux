@@ -2,6 +2,21 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2023-02-23
+
+### Added
+
+- Added `selinux::SecurityContext::previous_of_process()` method.
+
+### Changed
+
+- The prototype of `selinux::policy::load()` changed, promising not to change its input.
+  This mirrors a change to `security_load_policy()` introduced by `libselinux` version `3.5`.
+
+  > ⚠️ **This is a breaking change**.
+
+- Updated dependencies: `serial_test`.
+
 ## [0.3.3] - 2023-01-05
 
 ### Changed
@@ -35,8 +50,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- The prototype of `ContextRestore::restore_context_of_file_system_entry()` changed, in order to
-  add support for the new features introduced by `libselinux` version `3.4`.
+- The prototype of `selinux::ContextRestore::restore_context_of_file_system_entry()` changed,
+  in order to add support for the new features introduced by `libselinux` version `3.4`.
 
   > ⚠️ **This is a breaking change**.
 
@@ -103,18 +118,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- Added `SecurityContext::to_c_string()` method.
+- Added `selinux::SecurityContext::to_c_string()` method.
 
 ## [0.2.0] - 2021-08-09
 
 ### Added
 
 - Added new versions of `set_type()`, `set_range()`, `set_role()` and `set_user()`
-  in `OpaqueSecurityContext` where the new value is a `CStr`.
+  in `selinux::OpaqueSecurityContext` where the new value is a `CStr`.
 
 ### Changed
 
-- Renamed multiple methods in `OpaqueSecurityContext`:
+- Renamed multiple methods in `selinux::OpaqueSecurityContext`:
   - `set_type()` to `set_type_str()`.
   - `set_range()` to `set_range_str()`.
   - `set_role()` to `set_role_str()`.
@@ -133,7 +148,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- Implemented `Send` for `CAllocatedBlock`.
+- Implemented `Send` for `selinux::utils::CAllocatedBlock`.
 
 ### Changed
 

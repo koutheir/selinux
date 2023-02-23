@@ -115,7 +115,7 @@ bitflags! {
 
         /// Count, but otherwise ignore, errors during the file tree walk.
         ///
-        /// This flag is supported only by `libselinux` version `3.4` or later.
+        /// This flag requires `libselinux` version `3.4` or later.
         const COUNT_ERRORS = 0x20000;
     }
 }
@@ -211,8 +211,9 @@ where
     /// Restore file(s) default SELinux security contexts.
     ///
     /// If `threads_count` is zero, then:
-    /// - If `selinux_restorecon_parallel()` is supported by `libselinux`, then this operation will
-    ///   use as many threads as the number of online processor cores present.
+    /// - If `selinux_restorecon_parallel()` is supported by `libselinux` (version 3.4 or later),
+    ///   then this operation will use as many threads as the number of online processor
+    ///   cores present.
     /// - Otherwise, this operation will run in one thread.
     ///
     /// When this method succeeds:

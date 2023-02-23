@@ -62,7 +62,7 @@ pub(crate) fn pathbuf_from_vec(bytes: Vec<u8>) -> PathBuf {
 fn cargo_version(toolchain: &str) -> Result<()> {
     let mut cmd = process::Command::new("cargo");
     cmd.stdout(process::Stdio::null())
-        .args([&format!("+{}", toolchain), "--version"]);
+        .args([&format!("+{toolchain}"), "--version"]);
     run_cmd(cmd, "cargo --version")
 }
 
@@ -89,7 +89,7 @@ pub(crate) fn cargo_command(config: &Config, toolchain: &str, args: &[&str]) -> 
         .env("RUST_BACKTRACE", "1");
 
     if !toolchain.is_empty() {
-        cmd.arg(&format!("+{}", toolchain));
+        cmd.arg(&format!("+{toolchain}"));
     }
 
     cmd.args(args).args(&config.target_args);
