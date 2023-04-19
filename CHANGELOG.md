@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2023-04-18
+
+### Changed
+
+- Updated dependencies.
+
 ## [0.4.0] - 2023-02-23
 
 ### Added
@@ -15,7 +21,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   > ⚠️ **This is a breaking change**.
 
-- Updated dependencies: `serial_test`.
+- Updated dependencies.
 
 ## [0.3.3] - 2023-01-05
 
@@ -28,7 +34,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   Thank you, [*Ralf Jung*](https://github.com/RalfJung).
 
-- Updated dependencies: `once_cell`, `serial_test`, `socketpair`.
+- Updated dependencies.
 - Updated copyright years.
 
 ## [0.3.2] - 2022-11-26
@@ -44,7 +50,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- Updated dependencies: `selinux-sys`, `once_cell`, `socketpair`.
+- Updated dependencies.
 
 ## [0.3.0] - 2022-09-18
 
@@ -58,7 +64,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Calling the new prototype with `threads_count` set to `1` reproduces the old behavior.
 
 - Switched to Rust's 2021 edition.
-- Updated dependencies: `simplelog`, `once_cell`, `serial_test`, `socketpair`.
+- Updated dependencies.
 
 ## [0.2.7] - 2022-04-09
 
@@ -70,7 +76,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- Updated dependencies: `simplelog`, `once_cell`, `tempfile`, `serial_test`, `socketpair`.
+- Updated dependencies.
 - Updated copyright years.
 
 ## [0.2.5] - 2021-09-22
@@ -93,7 +99,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
   Thank you, [*Matt Rice*](https://github.com/ratmice).
 
-- Updated dependencies: `socketpair`.
+- Updated dependencies.
 
 ## [0.2.3] - 2021-08-22
 
@@ -112,7 +118,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- Updated dependencies: `bitflags`, `socketpair`.
+- Updated dependencies.
 
 ## [0.2.1] - 2021-08-10
 
@@ -152,7 +158,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- Updated dependencies: `selinux-sys`, `assert_matches`, `socketpair`.
+- Updated dependencies.
 - Updated nightly compiler version for coverage analysis.
 
 ## [0.1.1] - 2021-06-19
