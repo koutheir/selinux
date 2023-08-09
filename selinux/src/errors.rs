@@ -14,15 +14,15 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[non_exhaustive]
 pub enum Error {
     /// Path is invalid.
-    #[error("Path is invalid: '{}'", .0.display())]
+    #[error("path is invalid: '{}'", .0.display())]
     PathIsInvalid(PathBuf),
 
     /// Input security contexts have different formats.
-    #[error("Input security contexts have different formats")]
+    #[error("input security contexts have different formats")]
     SecurityContextFormatMismatch,
 
     /// Security context has an expected format.
-    #[error("Security context has an expected format")]
+    #[error("security context has an expected format")]
     UnexpectedSecurityContextFormat,
 
     /// Lock was poisoned.
