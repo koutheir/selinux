@@ -1,8 +1,9 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
 #![doc = include_str!("../README.md")]
-#![doc(html_root_url = "https://docs.rs/selinux/0.4.2")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.4.3")]
 #![allow(clippy::upper_case_acronyms)]
 #![warn(
+    unsafe_op_in_unsafe_fn,
     missing_docs,
     clippy::must_use_candidate,
     clippy::default_numeric_fallback,
@@ -1493,12 +1494,12 @@ impl SecurityClass {
         &self,
         access_vector: selinux_sys::access_vector_t,
     ) -> Result<&'static CStr> {
-        let name_ptr = selinux_sys::security_av_perm_to_string(self.0, access_vector);
+        let name_ptr = unsafe { selinux_sys::security_av_perm_to_string(self.0, access_vector) };
         if name_ptr.is_null() {
             let err = io::ErrorKind::NotFound.into();
             Err(Error::from_io("security_av_perm_to_string()", err))
         } else {
-            Ok(CStr::from_ptr(name_ptr))
+            unsafe { Ok(CStr::from_ptr(name_ptr)) }
         }
     }
 

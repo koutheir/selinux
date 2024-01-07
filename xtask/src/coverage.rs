@@ -32,7 +32,7 @@ pub(crate) fn coverage(config: &Config) -> Result<()> {
         "--Xdemangler",
         "rustfilt",
         "--ignore-filename-regex",
-        r#"/\.cargo/registry/"#,
+        r"/\.cargo/registry/",
         "--ignore-filename-regex",
         r#"/rustc/"#,
         "--ignore-filename-regex",
@@ -117,7 +117,7 @@ fn build_coverage_binaries(
     let mut cmd = process::Command::new("cargo");
     cmd.current_dir(config.workspace_dir)
         .stdout(process::Stdio::piped())
-        .envs(common_env.iter().map(|(k, v)| (k, v)))
+        .envs(common_env.iter().map(|(k, v)| (*k, *v)))
         .env("LLVM_PROFILE_FILE", "/dev/null")
         .args(common_args)
         .args(["--no-run", "--message-format=json"]);
@@ -144,7 +144,7 @@ fn run_coverage_binaries(
 
     let mut cmd = process::Command::new("cargo");
     cmd.current_dir(config.workspace_dir)
-        .envs(common_env.iter().map(|(k, v)| (k, v)))
+        .envs(common_env.iter().map(|(k, v)| (*k, *v)))
         .env("LLVM_PROFILE_FILE", &config.coverage_dir.join("%m.profraw"))
         .args(common_args);
     run_cmd(cmd, "cargo")
