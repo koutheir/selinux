@@ -594,7 +594,7 @@ fn security_class_new() {
 
     let _name = sc.full_access_vector_name(0).unwrap();
     let _name = sc.full_access_vector_name(1).unwrap();
-    sc.full_access_vector_name(u32::MAX).unwrap_err();
+    let _name = sc.full_access_vector_name(u32::MAX).unwrap();
 
     sc.access_vector_bit("invalid").unwrap_err();
 

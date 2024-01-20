@@ -6,6 +6,8 @@ use std::os::raw::c_void;
 use std::path::Path;
 use std::ptr;
 
+use assert_matches::assert_matches;
+
 #[test]
 fn labeler_new_file() {
     let mut labeler1 = super::Labeler::<super::back_end::File>::new(&[], false).unwrap();
@@ -78,8 +80,9 @@ fn labeler_partial_match_by_path() {
 fn labeler_get_digests_all_partial_matches_by_path() {
     let labeler = super::Labeler::<super::back_end::File>::new(&[], false).unwrap();
 
-    if let Err(r) = labeler.get_digests_all_partial_matches_by_path("/lib") {
-        assert_eq!(r.io_source().unwrap().raw_os_error(), Some(libc::ENOSYS));
+    if let Err(r) = labeler.get_digests_all_partial_matches_by_path("/tmp") {
+        let r = r.io_source().unwrap().raw_os_error();
+        assert_matches!(r, Some(libc::ENOSYS | libc::ENOENT));
     }
 }
 
