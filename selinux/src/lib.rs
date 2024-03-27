@@ -1,6 +1,6 @@
 #![cfg(all(target_os = "linux", not(target_env = "kernel")))]
 #![doc = include_str!("../README.md")]
-#![doc(html_root_url = "https://docs.rs/selinux/0.4.3")]
+#![doc(html_root_url = "https://docs.rs/selinux/0.4.4")]
 #![allow(clippy::upper_case_acronyms)]
 #![warn(
     unsafe_op_in_unsafe_fn,

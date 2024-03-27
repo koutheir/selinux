@@ -3,26 +3,27 @@
 [package]
 name          = "selinux"
 description   = "Flexible Mandatory Access Control for Linux"
-version       = "0.4.3"                                                          # Update version in `html_root_url`.
+version       = "0.4.4"                                                          # Update version in `html_root_url`.
 authors       = ["Koutheir Attouchi <koutheir@gmail.com>"]
 edition       = "2021"
 readme        = "../README.md"
 license       = "MIT"
 keywords      = ["selinux", "security", "access-control", "linux", "filesystem"]
 categories    = ["api-bindings", "filesystem", "os", "os::linux-apis"]
-repository    = "https://github.com/koutheir/selinux"
 documentation = "https://docs.rs/selinux"
+homepage      = "https://codeberg.org/koutheir/selinux.git"
+repository    = "https://codeberg.org/koutheir/selinux.git"
 
 [dependencies]
 thiserror                   = { version = "1.0" }
 selinux-sys                 = { version = "0.6" }
 libc                        = { version = "0.2" }
-bitflags                    = { version = "2.4" }
+bitflags                    = { version = "2.5" }
 once_cell                   = { version = "1.19" }
 reference-counted-singleton = { version = "0.1" }
 
 [dev-dependencies]
 assert_matches = { version = "1.5" }
-tempfile       = { version = "3.9" }
+tempfile       = { version = "3.10" }
 serial_test    = { version = "3.0" }
 socketpair     = { version = "0.19" }
